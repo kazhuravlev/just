@@ -68,3 +68,8 @@ func SliceAll[T any](in []T, fn func(T) bool) bool {
 
 	return true
 }
+
+// SliceContains returns true when `in` contains elem.
+func SliceContains[T comparable](in []T, elem T) bool {
+	return SliceAny(in, func(v T) bool { return v == elem })
+}
