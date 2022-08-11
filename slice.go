@@ -35,3 +35,16 @@ func SliceFilter[T any](in []T, fn func(T) bool) []T {
 
 	return res
 }
+
+func SliceReverse[T any](in []T) []T {
+	if len(in) == 0 {
+		return []T{}
+	}
+
+	res := make([]T, len(in))
+	for i := range in {
+		res[i] = in[len(in)-i-1]
+	}
+
+	return res
+}
