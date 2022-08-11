@@ -48,3 +48,23 @@ func SliceReverse[T any](in []T) []T {
 
 	return res
 }
+
+func SliceAny[T any](in []T, fn func(T) bool) bool {
+	for i := range in {
+		if fn(in[i]) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func SliceAll[T any](in []T, fn func(T) bool) bool {
+	for i := range in {
+		if !fn(in[i]) {
+			return false
+		}
+	}
+
+	return true
+}
