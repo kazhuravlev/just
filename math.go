@@ -1,7 +1,7 @@
 package just
 
 type number interface {
-	int | uint | int64 | int32 | int16 | int8 | float64 | float32
+	int | int64 | int32 | int16 | int8 | uint | uint8 | uint16 | uint32 | uint64 | uintptr | float64 | float32
 }
 
 func Max[T number](in ...T) T {
