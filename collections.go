@@ -1,9 +1,9 @@
 package just
 
-func MergeMap[K comparable, V any](m1, m2 map[K]V, fn func(v1, v2 V) V) map[K]V {
+func MergeMap[K comparable, V any](m1, m2 map[K]V, fn func(k K, v1, v2 V) V) map[K]V {
 	m := make(map[K]V, len(m1))
 	for k, v := range m1 {
-		m[k] = fn(v, m2[k])
+		m[k] = fn(k, v, m2[k])
 	}
 
 	var emptyVal V
@@ -12,7 +12,7 @@ func MergeMap[K comparable, V any](m1, m2 map[K]V, fn func(v1, v2 V) V) map[K]V 
 			continue
 		}
 
-		m[k] = fn(emptyVal, v)
+		m[k] = fn(k, emptyVal, v)
 	}
 
 	return m

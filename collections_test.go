@@ -130,7 +130,7 @@ func TestMergeMap(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res := just.MergeMap(row.m1, row.m2, func(a, b int) int { return row.fn(a, b) })
+			res := just.MergeMap(row.m1, row.m2, func(k, a, b int) int { return row.fn(a, b) })
 			require.EqualValues(t, row.exp, res)
 		})
 	}
