@@ -85,3 +85,13 @@ func SliceAddNotExists[T comparable](in []T, elem T) []T {
 
 	return append(in, elem)
 }
+
+// SliceUnion returns only uniq items from all slices.
+func SliceUnion[T comparable](in ...[]T) []T {
+	var res []T
+	for i := range in {
+		res = append(res, in[i]...)
+	}
+
+	return SliceUniq[T](res)
+}
