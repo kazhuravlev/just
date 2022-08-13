@@ -1,6 +1,9 @@
 package just
 
-import "database/sql/driver"
+import (
+	"database/sql/driver"
+	"errors"
+)
 
 type NullVal[T any] struct {
 	Val   T
@@ -15,8 +18,13 @@ func (nv *NullVal[T]) Scan(value any) error {
 		return nil
 	}
 
+	v, ok := value.(T)
+	if !ok {
+		return errors.New("unexpected value type")
+	}
+
 	nv.Valid = true
-	nv.Val = value
+	nv.Val = v
 	return nil
 }
 
