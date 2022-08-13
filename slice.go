@@ -1,13 +1,10 @@
 package just
 
 func SliceUniq[T comparable](in []T) []T {
-	m := make(map[T]struct{}, len(in))
-	for i := range in {
-		m[in[i]] = struct{}{}
-	}
+	index := Slice2Map(in)
 
-	res := make([]T, 0, len(m))
-	for k := range m {
+	res := make([]T, 0, len(index))
+	for k := range index {
 		res = append(res, k)
 	}
 
@@ -94,4 +91,41 @@ func SliceUnion[T comparable](in ...[]T) []T {
 	}
 
 	return SliceUniq[T](res)
+}
+
+// Slice2Map make map from slice, which contains all values from `in` as map
+// keys.
+func Slice2Map[T comparable](in []T) map[T]struct{} {
+	res := make(map[T]struct{}, len(in))
+	for i := range in {
+		res[in[i]] = struct{}{}
+	}
+
+	return res
+}
+
+// SliceDifference return the difference between `oldSlice` and `newSlice`.
+// Returns only elements which presented in `newSlice` but not presented
+// in `oldSlice`.
+// Example: [1,2,3], [3,4,5] => [4,5]
+func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
+	if len(oldSlice) == 0 {
+		return newSlice
+	}
+
+	if len(newSlice) == 0 {
+		return nil
+	}
+
+	index := Slice2Map(oldSlice)
+	res := make([]T, 0, len(newSlice))
+	for i := range newSlice {
+		if _, ok := index[newSlice[i]]; ok {
+			continue
+		}
+
+		res = append(res, newSlice[i])
+	}
+
+	return res
 }
