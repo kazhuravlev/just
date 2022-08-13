@@ -73,3 +73,15 @@ func SliceAll[T any](in []T, fn func(T) bool) bool {
 func SliceContains[T comparable](in []T, elem T) bool {
 	return SliceAny(in, func(v T) bool { return v == elem })
 }
+
+// SliceAddNotExists return `in` with `elem` inside when `elem` not exists in
+// `in`.
+func SliceAddNotExists[T comparable](in []T, elem T) []T {
+	for i := range in {
+		if in[i] == elem {
+			return in
+		}
+	}
+
+	return append(in, elem)
+}
