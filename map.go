@@ -74,3 +74,48 @@ func MapGetValues[K comparable, V any](m map[K]V) []V {
 
 	return res
 }
+
+// KV represents the key-value of map.
+type KV[K comparable, V any] struct {
+	Key K
+	Val V
+}
+
+// MapPairs returns slice of KV structs that contains ket-value pairs.
+func MapPairs[K comparable, V any](m map[K]V) []KV[K, V] {
+	res := make([]KV[K, V], len(m))
+	var i int
+	for k, v := range m {
+		res[i] = KV[K, V]{
+			Key: k,
+			Val: v,
+		}
+		i++
+	}
+
+	return res
+}
+
+// MapDefaults returns the map `m` after filling in its non-exists keys by
+// `defaults`.
+// Example: {1:1}, {1:0, 2:2} => {1:1, 2:2}
+func MapDefaults[K comparable, V any](m map[K]V, defaults map[K]V) map[K]V {
+	res := MapCopy(m)
+	for k, v := range defaults {
+		if _, ok := res[k]; !ok {
+			res[k] = v
+		}
+	}
+
+	return res
+}
+
+// MapCopy returns a shallow copy of map.
+func MapCopy[K comparable, V any](m map[K]V) map[K]V {
+	res := make(map[K]V, len(m))
+	for k, v := range m {
+		res[k] = v
+	}
+
+	return res
+}
