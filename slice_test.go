@@ -1,6 +1,7 @@
 package just_test
 
 import (
+	"fmt"
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -549,6 +550,68 @@ func TestSliceFindAll(t *testing.T) {
 			t.Parallel()
 
 			res := just.SliceFindAll(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceRange(t *testing.T) {
+	table := []struct {
+		name              string
+		start, stop, step int
+		exp               []int
+	}{
+		{
+			name:  "from_zero_to_zero",
+			start: 0,
+			stop:  0,
+			step:  0,
+			exp:   nil,
+		},
+		{
+			name:  "from_0_to_5_by_2",
+			start: 0,
+			stop:  5,
+			step:  2,
+			exp:   []int{0, 2, 4},
+		},
+		{
+			name:  "from_0_to_5_by_minus_2",
+			start: 0,
+			stop:  5,
+			step:  -2,
+			exp:   nil,
+		},
+		{
+			name:  "from_5_to_0_by_2",
+			start: 5,
+			stop:  0,
+			step:  2,
+			exp:   nil,
+		},
+		{
+			name:  "from_minus_5_to_minus_1_by_2",
+			start: -5,
+			stop:  -1,
+			step:  2,
+			exp:   []int{-5, -3},
+		},
+		{
+			name:  "from_0_to_minus_10_by_minus_10",
+			start: 0,
+			stop:  -10,
+			step:  -10,
+			exp:   []int{0},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceRange(row.start, row.stop, row.step)
+			fmt.Println(row.exp, res)
 			assert.Equal(t, row.exp, res)
 		})
 	}

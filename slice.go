@@ -357,3 +357,41 @@ func SliceFindAllIndexes[T any](in []T, fn func(i int, elem T) bool) []int {
 
 	return res
 }
+
+// SliceRange produces a sequence of integers from start (inclusive)
+// to stop (exclusive) by step.
+func SliceRange[T number](start, stop, step T) []T {
+	if start == stop {
+		return nil
+	}
+
+	if step == 0 {
+		return nil
+	}
+
+	isIncr := start < stop
+	if isIncr && step < 0 {
+		return nil
+	}
+
+	if !isIncr && step > 0 {
+		return nil
+	}
+
+	var res []T
+	e := start
+	for {
+		if isIncr && e >= stop {
+			break
+		}
+
+		if !isIncr && e <= stop {
+			break
+		}
+
+		res = append(res, e)
+		e += step
+	}
+
+	return res
+}
