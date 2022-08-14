@@ -1,5 +1,8 @@
 name: Go
-on: [ push ]
+on:
+  push:
+    tags:
+      - '*'
 jobs:
   build:
     name: Build on golang ${{ matrix.go_version }} and ${{ matrix.os }}
