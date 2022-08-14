@@ -1,5 +1,6 @@
 package just
 
+// Bool returns true if element not equal to default value for this type.
 func Bool[T builtin](v T) bool {
 	switch x := interface{}(v).(type) {
 	case bool:

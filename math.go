@@ -1,5 +1,6 @@
 package just
 
+// Max returns the max number from `in`.
 func Max[T number](in ...T) T {
 	if len(in) == 0 {
 		panic("cannot find max of nothing")
@@ -19,6 +20,7 @@ func Max[T number](in ...T) T {
 	return res
 }
 
+// Min returns the min number from `in`.
 func Min[T number](in ...T) T {
 	if len(in) == 0 {
 		panic("cannot find min of nothing")
@@ -38,6 +40,7 @@ func Min[T number](in ...T) T {
 	return res
 }
 
+// Sum returns the sum of numbers from `in`.
 func Sum[T number](in ...T) T {
 	var acc T
 	for i := range in {

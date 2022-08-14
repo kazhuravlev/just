@@ -1,5 +1,6 @@
 package just
 
+// SliceUniq returns only unique values from `in`.
 func SliceUniq[T comparable](in []T) []T {
 	index := Slice2Map(in)
 
@@ -11,6 +12,7 @@ func SliceUniq[T comparable](in []T) []T {
 	return res
 }
 
+// SliceMap returns the slice where each element of `in` was handled by `fn`.
 func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	res := make([]V, len(in))
 	for i := range in {
@@ -20,6 +22,7 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	return res
 }
 
+// SliceFilter returns slice of values from `in` where `fn(elem) == true`
 func SliceFilter[T any](in []T, fn func(T) bool) []T {
 	res := make([]T, 0, len(in))
 	for i := range in {
@@ -33,6 +36,7 @@ func SliceFilter[T any](in []T, fn func(T) bool) []T {
 	return res
 }
 
+// SliceReverse reverse the slice.
 func SliceReverse[T any](in []T) []T {
 	if len(in) == 0 {
 		return []T{}
@@ -46,6 +50,8 @@ func SliceReverse[T any](in []T) []T {
 	return res
 }
 
+// SliceAny returns true when `fn` returns true for at least one element
+// from `in`.
 func SliceAny[T any](in []T, fn func(T) bool) bool {
 	for i := range in {
 		if fn(in[i]) {
@@ -56,6 +62,7 @@ func SliceAny[T any](in []T, fn func(T) bool) bool {
 	return false
 }
 
+// SliceAll returns true when `fn` returns true for all elements from `in`.
 func SliceAll[T any](in []T, fn func(T) bool) bool {
 	for i := range in {
 		if !fn(in[i]) {

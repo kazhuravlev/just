@@ -5,6 +5,7 @@ import (
 	"errors"
 )
 
+// NullVal represent the nullable value for this type.
 type NullVal[T any] struct {
 	Val   T
 	Valid bool
@@ -37,11 +38,13 @@ func (nv NullVal[T]) Value() (driver.Value, error) {
 	return nv.Val, nil
 }
 
+// ValueOk returns the NullVal.Val and NullVal.Valid.
 func (nv NullVal[T]) ValueOk() (T, bool) {
 	return nv.Val, nv.Valid
 }
 
-func (nv NullVal[T]) SetDefault(val T) bool {
+// SetDefault set value `val` if NullVal.Valid == false.
+func (nv *NullVal[T]) SetDefault(val T) bool {
 	if nv.Valid {
 		return false
 	}
@@ -51,6 +54,7 @@ func (nv NullVal[T]) SetDefault(val T) bool {
 	return true
 }
 
+// Null returns NullVal for `val` type, which are `NullVal.Valid == true`.
 func Null[T any](val T) NullVal[T] {
 	return NullVal[T]{
 		Val:   val,
@@ -58,6 +62,7 @@ func Null[T any](val T) NullVal[T] {
 	}
 }
 
+// NullNull returns NullVal, which are `NullVal.Valid == false`.
 func NullNull[T any]() NullVal[T] {
 	var val T
 	return NullVal[T]{
