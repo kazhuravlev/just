@@ -443,3 +443,25 @@ func SliceEqualUnordered[T comparable](in1, in2 []T) bool {
 
 	return true
 }
+
+// SliceChain returns a slice where all `in` slices id appended to the end. Like
+// append(append(in[0], in[1]...), in[2]...).
+func SliceChain[T any](in ...[]T) []T {
+	if len(in) == 0 {
+		return nil
+	}
+
+	var l int
+	for i := range in {
+		l += len(in[i])
+	}
+
+	res := make([]T, l)
+	var x int
+	for i := range in {
+		copy(res[x:x+len(in[i])], in[i])
+		x += len(in[i])
+	}
+
+	return res
+}

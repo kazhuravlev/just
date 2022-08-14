@@ -801,3 +801,8 @@ func TestSliceEqualUnordered(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceChain(t *testing.T) {
+	res := just.SliceChain([]int{1, 2, 3}, []int{4, 5, 6}, []int{7, 8, 9})
+	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9}, res)
+}
