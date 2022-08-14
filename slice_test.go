@@ -5,6 +5,7 @@ import (
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"strconv"
 	"testing"
 )
 
@@ -156,8 +157,8 @@ func TestSliceZip(t *testing.T) {
 		{
 			name: "two_slices_one_empty",
 			in: [][]int{
-				{},
 				{20, 21},
+				{},
 			},
 			exp: nil,
 		},
@@ -312,45 +313,39 @@ func TestSliceFillElem(t *testing.T) {
 	assert.Equal(t, []string{"Hello", "Hello", "Hello"}, res)
 }
 
-func TestSliceFindFirst(t *testing.T) {
+func TestSliceFindFirstElem(t *testing.T) {
 	table := []struct {
 		name     string
 		in       []int
-		fn       func(int, int) bool
+		elem     int
 		exp      int
 		expIndex int
 	}{
 		{
 			name:     "empty",
 			in:       nil,
-			fn:       nil,
+			elem:     0,
 			exp:      0,
 			expIndex: -1,
 		},
 		{
-			name: "found_index_0",
-			in:   []int{1, 1, 1},
-			fn: func(i int, v int) bool {
-				return v == 1
-			},
+			name:     "found_index_0",
+			in:       []int{1, 1, 1},
+			elem:     1,
 			exp:      1,
 			expIndex: 0,
 		},
 		{
-			name: "found_index_2",
-			in:   []int{3, 2, 1},
-			fn: func(i int, v int) bool {
-				return v == 1
-			},
+			name:     "found_index_2",
+			in:       []int{3, 2, 1},
+			elem:     1,
 			exp:      1,
 			expIndex: 2,
 		},
 		{
-			name: "not_found",
-			in:   []int{3, 2, 1},
-			fn: func(i int, v int) bool {
-				return v == 42
-			},
+			name:     "not_found",
+			in:       []int{3, 2, 1},
+			elem:     42,
 			exp:      0,
 			expIndex: -1,
 		},
@@ -361,52 +356,46 @@ func TestSliceFindFirst(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res := just.SliceFindFirst(row.in, row.fn)
+			res := just.SliceFindFirstElem(row.in, row.elem)
 			assert.Equal(t, row.expIndex, res.Idx)
 			assert.Equal(t, row.exp, res.Val)
 		})
 	}
 }
 
-func TestSliceFindLast(t *testing.T) {
+func TestSliceFindLastElem(t *testing.T) {
 	table := []struct {
 		name     string
 		in       []int
-		fn       func(int, int) bool
+		elem     int
 		exp      int
 		expIndex int
 	}{
 		{
 			name:     "empty",
 			in:       nil,
-			fn:       nil,
+			elem:     0,
 			exp:      0,
 			expIndex: -1,
 		},
 		{
-			name: "found_index_0",
-			in:   []int{1, 2, 3},
-			fn: func(i int, v int) bool {
-				return v == 1
-			},
+			name:     "found_index_0",
+			in:       []int{1, 2, 3},
+			elem:     1,
 			exp:      1,
 			expIndex: 0,
 		},
 		{
-			name: "found_index_2",
-			in:   []int{3, 2, 1},
-			fn: func(i int, v int) bool {
-				return v == 1
-			},
+			name:     "found_index_2",
+			in:       []int{3, 2, 1},
+			elem:     1,
 			exp:      1,
 			expIndex: 2,
 		},
 		{
-			name: "not_found",
-			in:   []int{3, 2, 1},
-			fn: func(i int, v int) bool {
-				return v == 42
-			},
+			name:     "not_found",
+			in:       []int{3, 2, 1},
+			elem:     42,
 			exp:      0,
 			expIndex: -1,
 		},
@@ -417,7 +406,7 @@ func TestSliceFindLast(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res := just.SliceFindLast(row.in, row.fn)
+			res := just.SliceFindLastElem(row.in, row.elem)
 			assert.Equal(t, row.expIndex, res.Idx)
 			assert.Equal(t, row.exp, res.Val)
 		})
@@ -600,6 +589,13 @@ func TestSliceRange(t *testing.T) {
 			stop:  -10,
 			step:  -10,
 			exp:   []int{0},
+		},
+		{
+			name:  "from_0_to_10_by_0",
+			start: 0,
+			stop:  10,
+			step:  0,
+			exp:   nil,
 		},
 	}
 
@@ -785,6 +781,12 @@ func TestSliceEqualUnordered(t *testing.T) {
 			in2:  []int{1, 2, 3, 3},
 			exp:  true,
 		},
+		{
+			name: "equal3",
+			in1:  []int{1, 2, 3},
+			in2:  []int{4, 5, 6},
+			exp:  false,
+		},
 	}
 
 	for _, row := range table {
@@ -799,6 +801,298 @@ func TestSliceEqualUnordered(t *testing.T) {
 }
 
 func TestSliceChain(t *testing.T) {
+	res1 := just.SliceChain[int]()
+	assert.Equal(t, []int(nil), res1)
+
 	res := just.SliceChain([]int{1, 2, 3}, []int{4, 5, 6}, []int{7, 8, 9})
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9}, res)
+}
+
+func TestSliceSort(t *testing.T) {
+	a := []int{1, 3, 2}
+	just.SliceSort(a, less)
+	assert.Equal(t, []int{1, 2, 3}, a)
+}
+
+func TestSliceElem(t *testing.T) {
+	notExists := just.SliceElem[int]{Idx: -1, Val: 0}
+	existsFirst := just.SliceElem[int]{Idx: 0, Val: 10}
+	existsSecond := just.SliceElem[int]{Idx: 1, Val: 20}
+
+	t.Run("ok", func(t *testing.T) {
+		t.Parallel()
+
+		assert.False(t, notExists.Ok())
+		assert.True(t, existsFirst.Ok())
+		assert.True(t, existsSecond.Ok())
+	})
+
+	t.Run("value_ok", func(t *testing.T) {
+		t.Parallel()
+
+		var v int
+		var ok bool
+
+		v, ok = notExists.ValueOk()
+		assert.Equal(t, 0, v)
+		assert.False(t, ok)
+
+		v, ok = existsFirst.ValueOk()
+		assert.Equal(t, 10, v)
+		assert.True(t, ok)
+
+		v, ok = existsSecond.ValueOk()
+		assert.Equal(t, 20, v)
+		assert.True(t, ok)
+	})
+
+	t.Run("value_idx", func(t *testing.T) {
+		t.Parallel()
+
+		var v int
+		var idx int
+
+		v, idx = notExists.ValueIdx()
+		assert.Equal(t, 0, v)
+		assert.Equal(t, -1, idx)
+
+		v, idx = existsFirst.ValueIdx()
+		assert.Equal(t, 10, v)
+		assert.Equal(t, 0, idx)
+
+		v, idx = existsSecond.ValueIdx()
+		assert.Equal(t, 20, v)
+		assert.Equal(t, 1, idx)
+	})
+}
+
+func TestSliceWithout(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		elem int
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			elem: 0,
+			exp:  nil,
+		},
+		{
+			name: "exclude_two",
+			in:   []int{1, 2, 3, 4, 5, 6},
+			elem: 2,
+			exp:  []int{1, 3, 4, 5, 6},
+		},
+		{
+			name: "exclude_not_found",
+			in:   []int{1, 2, 3, 4, 5, 6},
+			elem: 10000,
+			exp:  []int{1, 2, 3, 4, 5, 6},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceWithoutElem(row.in, row.elem)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceUnion(t *testing.T) {
+	table := []struct {
+		name string
+		in   [][]int
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			exp:  []int{},
+		},
+		{
+			name: "case1",
+			in: [][]int{
+				{1, 2, 3},
+			},
+			exp: []int{1, 2, 3},
+		},
+		{
+			name: "case2",
+			in: [][]int{
+				{1, 2, 3},
+				{1, 2, 3, 1, 1, 1},
+				{3, 4, 5},
+				{4, 5, 1, 12},
+			},
+			exp: []int{1, 2, 3, 4, 5, 12},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceUnion(row.in...)
+			assert.Equal(t, just.SliceSortCopy(row.exp, less), just.SliceSortCopy(res, less))
+		})
+	}
+}
+
+func TestSliceAddNotExists(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		elem int
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			elem: 11,
+			exp:  []int{11},
+		},
+		{
+			name: "case1",
+			in:   []int{1, 1, 1},
+			elem: 1,
+			exp:  []int{1, 1, 1},
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			elem: 4,
+			exp:  []int{1, 2, 3, 4},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceAddNotExists(row.in, row.elem)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceContainsElem(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		elem int
+		exp  bool
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			elem: 11,
+			exp:  false,
+		},
+		{
+			name: "case1",
+			in:   []int{1, 1, 1},
+			elem: 1,
+			exp:  true,
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			elem: 4,
+			exp:  false,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceContainsElem(row.in, row.elem)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceAll(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int) bool
+		exp  bool
+	}{
+		{
+			name: "true_on_empty",
+			in:   nil,
+			fn:   func(v int) bool { return true },
+			exp:  true,
+		},
+		{
+			name: "case1",
+			in:   []int{1, 1, 1},
+			fn:   func(v int) bool { return v == 1 },
+			exp:  true,
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			fn:   func(v int) bool { return v == 1 },
+			exp:  false,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceAll(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceMap(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int) string
+		exp  []string
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   strconv.Itoa,
+			exp:  nil,
+		},
+		{
+			name: "case1",
+			in:   []int{1, 1, 1},
+			fn:   strconv.Itoa,
+			exp:  []string{"1", "1", "1"},
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			fn:   strconv.Itoa,
+			exp:  []string{"1", "2", "3"},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceMap(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
 }

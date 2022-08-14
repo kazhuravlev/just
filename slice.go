@@ -16,6 +16,10 @@ func SliceUniq[T comparable](in []T) []T {
 
 // SliceMap returns the slice where each element of `in` was handled by `fn`.
 func SliceMap[T any, V any](in []T, fn func(T) V) []V {
+	if len(in) == 0 {
+		return nil
+	}
+
 	res := make([]V, len(in))
 	for i := range in {
 		res[i] = fn(in[i])
@@ -26,6 +30,10 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 
 // SliceFilter returns slice of values from `in` where `fn(elem) == true`.
 func SliceFilter[T any](in []T, fn func(T) bool) []T {
+	if len(in) == 0 {
+		return nil
+	}
+
 	res := make([]T, 0, len(in))
 	for i := range in {
 		if !fn(in[i]) {
@@ -65,6 +73,7 @@ func SliceAny[T any](in []T, fn func(T) bool) bool {
 }
 
 // SliceAll returns true when `fn` returns true for all elements from `in`.
+// Returns true when in is empty.
 func SliceAll[T any](in []T, fn func(T) bool) bool {
 	for i := range in {
 		if !fn(in[i]) {
@@ -165,16 +174,9 @@ func SliceIntersection[T comparable](oldSlice, newSlice []T) []T {
 
 // SliceWithoutElem returns the slice `in` that not contains `elem`.
 func SliceWithoutElem[T comparable](in []T, elem T) []T {
-	res := make([]T, 0, len(in))
-	for i := range in {
-		if in[i] == elem {
-			continue
-		}
-
-		res[i] = in[i]
-	}
-
-	return res
+	return SliceWithout(in, func(v T) bool {
+		return v == elem
+	})
 }
 
 // SliceWithout returns the slice `in` where fn(elem) == true.
