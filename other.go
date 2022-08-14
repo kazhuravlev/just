@@ -2,7 +2,7 @@ package just
 
 // Bool returns true if element not equal to default value for this type.
 func Bool[T builtin](v T) bool {
-	switch x := interface{}(v).(type) {
+	switch x := any(v).(type) {
 	case bool:
 		return x
 	case uint8:
@@ -35,5 +35,5 @@ func Bool[T builtin](v T) bool {
 		return x != ""
 	}
 
-	panic("unknown type")
+	return false
 }
