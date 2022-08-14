@@ -224,3 +224,14 @@ func SliceChunk[T any](in []T, fn func(i int, elem T) bool) [][]T {
 
 	return res
 }
+
+// SliceChunkEvery split `in` into chunks by size `every`
+func SliceChunkEvery[T any](in []T, every int) [][]T {
+	if every == 0 {
+		panic("invalid arg")
+	}
+
+	return SliceChunk(in, func(i int, elem T) bool {
+		return i%every == 0
+	})
+}

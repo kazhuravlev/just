@@ -238,6 +238,76 @@ func TestSliceChunk(t *testing.T) {
 	}
 }
 
+func TestSliceChunkEvery(t *testing.T) {
+	table := []struct {
+		name  string
+		in    []int
+		every int
+		exp   [][]int
+	}{
+		{
+			name:  "empty",
+			in:    nil,
+			every: 1,
+			exp:   nil,
+		},
+		{
+			name:  "split_every_1",
+			in:    []int{1, 2, 3, 4},
+			every: 1,
+			exp: [][]int{
+				{1},
+				{2},
+				{3},
+				{4},
+			},
+		},
+		{
+			name:  "split_every_2",
+			in:    []int{1, 2, 3, 4},
+			every: 2,
+			exp: [][]int{
+				{1, 2},
+				{3, 4},
+			},
+		},
+		{
+			name:  "split_every_minus_2",
+			in:    []int{1, 2, 3, 4},
+			every: -2,
+			exp: [][]int{
+				{1, 2},
+				{3, 4},
+			},
+		},
+		{
+			name:  "split_every_3",
+			in:    []int{1, 2, 3, 4},
+			every: 3,
+			exp: [][]int{
+				{1, 2, 3},
+				{4},
+			},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceChunkEvery(row.in, row.every)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+
+	t.Run("split_every_0_invalid", func(t *testing.T) {
+		assert.Panics(t, func() {
+			just.SliceChunkEvery([]int{1, 2, 3, 4}, 0)
+		})
+	})
+}
+
 func TestSliceFillElem(t *testing.T) {
 	res := just.SliceFillElem(3, "Hello")
 	assert.Equal(t, []string{"Hello", "Hello", "Hello"}, res)
