@@ -50,3 +50,27 @@ func MapFilterValues[K comparable, V any](in map[K]V, fn func(v V) bool) map[K]V
 		return fn(v)
 	})
 }
+
+// MapGetKeys returns all keys of map.
+func MapGetKeys[K comparable, V any](m map[K]V) []K {
+	res := make([]K, len(m))
+	var i int
+	for k := range m {
+		res[i] = k
+		i++
+	}
+
+	return res
+}
+
+// MapGetValues returns all values of map. Not Uniq, unordered.
+func MapGetValues[K comparable, V any](m map[K]V) []V {
+	res := make([]V, len(m))
+	var i int
+	for _, v := range m {
+		res[i] = v
+		i++
+	}
+
+	return res
+}
