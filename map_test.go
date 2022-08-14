@@ -2,7 +2,9 @@ package just_test
 
 import (
 	"github.com/kazhuravlev/just"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"sort"
 	"testing"
 )
 
@@ -78,14 +80,14 @@ func TestMapMerge(t *testing.T) {
 	}
 }
 
-func TestMapFilter(t *testing.T) {
-	alwaysTrue := func(_, _ int) bool { return true }
-	alwaysFalse := func(_, _ int) bool { return false }
+func TestMapFilterKeys(t *testing.T) {
+	alwaysTrue := func(_ int) bool { return true }
+	alwaysFalse := func(_ int) bool { return false }
 
 	table := []struct {
 		name string
 		m    map[int]int
-		fn   func(int, int) bool
+		fn   func(int) bool
 		exp  map[int]int
 	}{
 		{
@@ -107,23 +109,23 @@ func TestMapFilter(t *testing.T) {
 			exp:  map[int]int{1: 1, 2: 2},
 		},
 		{
-			name: "should_ignore_all_kv",
+			name: "should_ignore_all",
 			m:    map[int]int{1: 1, 2: 2},
 			fn:   alwaysFalse,
 			exp:  map[int]int{},
 		},
 		{
-			name: "keep_only_values_gt_10",
-			m:    map[int]int{1: 10, 2: 2, 3: 100, 4: -1},
-			fn: func(_, v int) bool {
-				return v > 10
+			name: "keep_only_key_1_or_2",
+			m:    map[int]int{1: 10, 2: 20, 3: 100, 4: -1},
+			fn: func(k int) bool {
+				return k == 1 || k == 2
 			},
-			exp: map[int]int{3: 100},
+			exp: map[int]int{1: 10, 2: 20},
 		},
 		{
 			name: "keep_only_even_keys",
 			m:    map[int]int{1: 10, 2: 2, 3: 100, 4: -1},
-			fn: func(k, _ int) bool {
+			fn: func(k int) bool {
 				return k%2 == 0
 			},
 			exp: map[int]int{2: 2, 4: -1},
@@ -135,8 +137,221 @@ func TestMapFilter(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res := just.MapFilter(row.m, row.fn)
+			res := just.MapFilterKeys(row.m, row.fn)
 			require.EqualValues(t, row.exp, res)
+		})
+	}
+}
+
+func TestMapFilterValues(t *testing.T) {
+	alwaysTrue := func(_ int) bool { return true }
+	alwaysFalse := func(_ int) bool { return false }
+
+	table := []struct {
+		name string
+		m    map[int]int
+		fn   func(int) bool
+		exp  map[int]int
+	}{
+		{
+			name: "empty_nil",
+			m:    nil,
+			fn:   alwaysTrue,
+			exp:  map[int]int{},
+		},
+		{
+			name: "empty_len0",
+			m:    map[int]int{},
+			fn:   alwaysTrue,
+			exp:  map[int]int{},
+		},
+		{
+			name: "should_copy_all_kv",
+			m:    map[int]int{1: 1, 2: 2},
+			fn:   alwaysTrue,
+			exp:  map[int]int{1: 1, 2: 2},
+		},
+		{
+			name: "should_ignore_all",
+			m:    map[int]int{1: 1, 2: 2},
+			fn:   alwaysFalse,
+			exp:  map[int]int{},
+		},
+		{
+			name: "keep_only_values_gte_20",
+			m:    map[int]int{1: 10, 2: 20, 3: 100, 4: -1},
+			fn: func(v int) bool {
+				return v >= 20
+			},
+			exp: map[int]int{2: 20, 3: 100},
+		},
+		{
+			name: "keep_only_even_values",
+			m:    map[int]int{1: 10, 2: 2, 3: 100, 4: -1},
+			fn: func(v int) bool {
+				return v%2 == 0
+			},
+			exp: map[int]int{2: 2, 3: 100, 1: 10},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapFilterValues(row.m, row.fn)
+			require.EqualValues(t, row.exp, res)
+		})
+	}
+}
+
+func TestMapGetKeys(t *testing.T) {
+	table := []struct {
+		name string
+		m    map[int]int
+		exp  []int
+	}{
+		{
+			name: "empty_nil",
+			m:    nil,
+			exp:  nil,
+		},
+		{
+			name: "empty_len0",
+			m:    map[int]int{},
+			exp:  nil,
+		},
+		{
+			name: "case1",
+			m:    map[int]int{1: 11, 2: 22, 3: 33},
+			exp:  []int{1, 2, 3},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapGetKeys(row.m)
+			sort.Ints(res)
+			require.EqualValues(t, row.exp, res)
+		})
+	}
+}
+
+func TestMapGetValues(t *testing.T) {
+	table := []struct {
+		name string
+		m    map[int]int
+		exp  []int
+	}{
+		{
+			name: "empty_nil",
+			m:    nil,
+			exp:  nil,
+		},
+		{
+			name: "empty_len0",
+			m:    map[int]int{},
+			exp:  nil,
+		},
+		{
+			name: "case1",
+			m:    map[int]int{1: 11, 2: 22, 3: 33},
+			exp:  []int{11, 22, 33},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapGetValues(row.m)
+			sort.Ints(res)
+			require.EqualValues(t, row.exp, res)
+		})
+	}
+}
+
+func TestMapPairs(t *testing.T) {
+	table := []struct {
+		name string
+		m    map[int]int
+		exp  []just.KV[int, int]
+	}{
+		{
+			name: "empty_nil",
+			m:    nil,
+			exp:  []just.KV[int, int]{},
+		},
+		{
+			name: "empty_len0",
+			m:    map[int]int{},
+			exp:  []just.KV[int, int]{},
+		},
+		{
+			name: "case1",
+			m:    map[int]int{1: 11, 2: 22, 3: 33},
+			exp: []just.KV[int, int]{
+				{Key: 1, Val: 11},
+				{Key: 2, Val: 22},
+				{Key: 3, Val: 33},
+			},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapPairs(row.m)
+			require.EqualValues(t, row.exp, just.SliceSortCopy(res, func(a, b just.KV[int, int]) bool { return a.Key < b.Key }))
+		})
+	}
+}
+
+func TestMapDefaults(t *testing.T) {
+	table := []struct {
+		name              string
+		in, defaults, exp map[int]int
+	}{
+		{
+			name:     "empty",
+			in:       nil,
+			defaults: nil,
+			exp:      map[int]int{},
+		},
+		{
+			name:     "empty_defaults",
+			in:       map[int]int{1: 1, 2: 2},
+			defaults: nil,
+			exp:      map[int]int{1: 1, 2: 2},
+		},
+		{
+			name:     "defaults_will_not_rewrite_src",
+			in:       map[int]int{1: 1, 2: 2},
+			defaults: map[int]int{1: 11, 2: 22},
+			exp:      map[int]int{1: 1, 2: 2},
+		},
+		{
+			name:     "defaults_will_extend_non_exists_keys",
+			in:       map[int]int{1: 1, 2: 2},
+			defaults: map[int]int{2: 22, 3: 33},
+			exp:      map[int]int{1: 1, 2: 2, 3: 33},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapDefaults(row.in, row.defaults)
+			assert.Equal(t, row.exp, res)
 		})
 	}
 }
