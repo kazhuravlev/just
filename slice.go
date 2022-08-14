@@ -236,38 +236,81 @@ func SliceChunkEvery[T any](in []T, every int) [][]T {
 	})
 }
 
-// SliceFindFirst return first elem from `in` that fn(index, elem) == true.
-// returns index of found elem or -1 if elem not found.
-func SliceFindFirst[T any](in []T, fn func(i int, elem T) bool) (T, int) {
-	for i := range in {
-		if fn(i, in[i]) {
-			return in[i], i
-		}
-	}
-
-	var v T
-	return v, -1
-}
-
-// SliceFindLast return last elem from `in` that fn(index, elem) == true.
-// returns index of found elem or -1 if elem not found.
-func SliceFindLast[T any](in []T, fn func(i int, elem T) bool) (T, int) {
-	for i := len(in) - 1; i != -1; i-- {
-		if fn(i, in[i]) {
-			return in[i], i
-		}
-	}
-
-	var v T
-	return v, -1
-}
-
 // SliceElem represent element of slice.
 type SliceElem[T any] struct {
 	// Idx is index of element in slice.
 	Idx int
 	// Val is value on slice by Idx index.
 	Val T
+}
+
+// ValueOk returns the value and true (when element is exists in slice) or false in other case.
+// Useful for cases like:
+//   if elem, ok := SliceFindFirstElem([]int{1,2,3}, 2); ok{
+//   	fmt.Println(elem)
+//   }
+func (e SliceElem[T]) ValueOk() (T, bool) {
+	return e.Val, e.Idx != -1
+}
+
+// Ok returns true if Idx is valid.
+func (e SliceElem[T]) Ok() bool {
+	return e.Idx != -1
+}
+
+// ValueIdx returns value and index as is.
+// Useful for this:
+//   elem, idx := SliceFindFirstElem([]int{1,2,3}, 2).ValueIdx()
+func (e SliceElem[T]) ValueIdx() (T, int) {
+	return e.Val, e.Idx
+}
+
+// SliceFindFirst return first elem from `in` that fn(index, elem) == true.
+// returns index of found elem or -1 if elem not found.
+func SliceFindFirst[T any](in []T, fn func(i int, elem T) bool) SliceElem[T] {
+	for i := range in {
+		if fn(i, in[i]) {
+			return SliceElem[T]{
+				Idx: i,
+				Val: in[i],
+			}
+		}
+	}
+
+	return SliceElem[T]{
+		Idx: -1,
+	}
+}
+
+// SliceFindFirstElem return first elem from `in` that equals to `elem`.
+func SliceFindFirstElem[T comparable](in []T, elem T) SliceElem[T] {
+	return SliceFindFirst(in, func(_ int, e T) bool {
+		return e == elem
+	})
+}
+
+// SliceFindLast return last elem from `in` that fn(index, elem) == true.
+// returns index of found elem or -1 if elem not found.
+func SliceFindLast[T any](in []T, fn func(i int, elem T) bool) SliceElem[T] {
+	for i := len(in) - 1; i != -1; i-- {
+		if fn(i, in[i]) {
+			return SliceElem[T]{
+				Idx: i,
+				Val: in[i],
+			}
+		}
+	}
+
+	return SliceElem[T]{
+		Idx: -1,
+	}
+}
+
+// SliceFindLastElem return last elem from `in` that equals to `elem`.
+func SliceFindLastElem[T comparable](in []T, elem T) SliceElem[T] {
+	return SliceFindLast(in, func(_ int, e T) bool {
+		return e == elem
+	})
 }
 
 // SliceFindAll return all elem and index from `in` that fn(index, elem) == true.

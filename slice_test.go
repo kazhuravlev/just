@@ -362,9 +362,9 @@ func TestSliceFindFirst(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res, found := just.SliceFindFirst(row.in, row.fn)
-			assert.Equal(t, row.expIndex, found)
-			assert.Equal(t, row.exp, res)
+			res := just.SliceFindFirst(row.in, row.fn)
+			assert.Equal(t, row.expIndex, res.Idx)
+			assert.Equal(t, row.exp, res.Val)
 		})
 	}
 }
@@ -418,9 +418,9 @@ func TestSliceFindLast(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res, found := just.SliceFindLast(row.in, row.fn)
-			assert.Equal(t, row.expIndex, found)
-			assert.Equal(t, row.exp, res)
+			res := just.SliceFindLast(row.in, row.fn)
+			assert.Equal(t, row.expIndex, res.Idx)
+			assert.Equal(t, row.exp, res.Val)
 		})
 	}
 }
