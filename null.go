@@ -1,6 +1,7 @@
 package just
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"errors"
 )
@@ -13,9 +14,20 @@ type NullVal[T any] struct {
 
 // Scan implements the Scanner interface.
 func (nv *NullVal[T]) Scan(value any) error {
+	if v, ok := any(&nv.Val).(sql.Scanner); ok {
+		if err := v.Scan(value); err != nil {
+			var val T
+			nv.Val, nv.Valid = val, false
+			return err
+		}
+
+		nv.Valid = true
+		return nil
+	}
+
 	if value == nil {
 		var val T
-		nv.Val, nv.Valid = val, false
+		nv.Val, nv.Valid = val, true
 		return nil
 	}
 
@@ -33,6 +45,10 @@ func (nv *NullVal[T]) Scan(value any) error {
 func (nv NullVal[T]) Value() (driver.Value, error) {
 	if !nv.Valid {
 		return nil, nil
+	}
+
+	if v, ok := any(nv.Val).(driver.Valuer); ok {
+		return v.Value()
 	}
 
 	return nv.Val, nil
