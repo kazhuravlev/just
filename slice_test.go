@@ -5,9 +5,10 @@ import (
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"sort"
 	"testing"
 )
+
+var less = func(a, b int) bool { return a < b }
 
 func TestUniq(t *testing.T) {
 	table := []struct {
@@ -58,10 +59,7 @@ func TestUniq(t *testing.T) {
 			t.Parallel()
 
 			res := just.SliceUniq(row.in)
-			sort.SliceStable(res, func(i, j int) bool {
-				return res[i] < res[j]
-			})
-			require.EqualValues(t, row.exp, res)
+			require.EqualValues(t, row.exp, just.SliceSortCopy(res, func(a, b int) bool { return a < b }))
 		})
 	}
 }
@@ -673,7 +671,7 @@ func TestSliceDifference(t *testing.T) {
 			t.Parallel()
 
 			res := just.SliceDifference(row.in1, row.in2)
-			assert.Equal(t, row.exp, res)
+			assert.Equal(t, just.SliceSortCopy(row.exp, less), just.SliceSortCopy(res, less))
 		})
 	}
 }
@@ -734,9 +732,7 @@ func TestSliceIntersection(t *testing.T) {
 			t.Parallel()
 
 			res := just.SliceIntersection(row.in1, row.in2)
-			sort.Ints(res)
-			sort.Ints(row.exp)
-			assert.Equal(t, row.exp, res)
+			assert.Equal(t, just.SliceSortCopy(row.exp, less), just.SliceSortCopy(res, less))
 		})
 	}
 }

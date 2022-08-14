@@ -1,5 +1,7 @@
 package just
 
+import "sort"
+
 // SliceUniq returns only unique values from `in`.
 func SliceUniq[T comparable](in []T) []T {
 	index := Slice2Map(in)
@@ -462,6 +464,24 @@ func SliceChain[T any](in ...[]T) []T {
 		copy(res[x:x+len(in[i])], in[i])
 		x += len(in[i])
 	}
+
+	return res
+}
+
+// SliceSort sort slice inplace.
+func SliceSort[T any](in []T, less func(a, b T) bool) {
+	sort.SliceStable(in, func(i, j int) bool {
+		return less(in[i], in[j])
+	})
+}
+
+// SliceSortCopy copy and sort slice.
+func SliceSortCopy[T any](in []T, less func(a, b T) bool) []T {
+	res := make([]T, len(in))
+	copy(res, in)
+	sort.SliceStable(res, func(i, j int) bool {
+		return less(res[i], res[j])
+	})
 
 	return res
 }
