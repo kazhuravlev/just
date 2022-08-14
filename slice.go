@@ -22,7 +22,7 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	return res
 }
 
-// SliceFilter returns slice of values from `in` where `fn(elem) == true`
+// SliceFilter returns slice of values from `in` where `fn(elem) == true`.
 func SliceFilter[T any](in []T, fn func(T) bool) []T {
 	res := make([]T, 0, len(in))
 	for i := range in {
@@ -73,8 +73,8 @@ func SliceAll[T any](in []T, fn func(T) bool) bool {
 	return true
 }
 
-// SliceContains returns true when `in` contains elem.
-func SliceContains[T comparable](in []T, elem T) bool {
+// SliceContainsElem returns true when `in` contains elem.
+func SliceContainsElem[T comparable](in []T, elem T) bool {
 	return SliceAny(in, func(v T) bool { return v == elem })
 }
 
@@ -132,6 +132,59 @@ func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
 		}
 
 		res = append(res, newSlice[i])
+	}
+
+	return res
+}
+
+// SliceWithoutElem returns the slice `in` that not contains `elem`.
+func SliceWithoutElem[T comparable](in []T, elem T) []T {
+	res := make([]T, 0, len(in))
+	for i := range in {
+		if in[i] == elem {
+			continue
+		}
+
+		res[i] = in[i]
+	}
+
+	return res
+}
+
+// SliceWithout returns the slice `in` where fn(elem) == true.
+func SliceWithout[T any](in []T, fn func(T) bool) []T {
+	return SliceFilter(in, func(elem T) bool {
+		return !fn(elem)
+	})
+}
+
+// SliceZip returns merged together the values of each of the arrays with the
+// values at the corresponding position. If the len of `in` is different - will
+// use smaller one.
+func SliceZip[T any](in ...[]T) [][]T {
+	if len(in) == 0 {
+		return nil
+	}
+
+	maxLen := len(in[0])
+	for i := range in {
+		if len(in[i]) < maxLen {
+			maxLen = len(in[i])
+		}
+	}
+
+	if maxLen == 0 {
+		return nil
+	}
+
+	res := make([][]T, maxLen)
+	for i := 0; i < maxLen; i++ {
+		row := make([]T, len(in))
+		for j := range in {
+			row[j] = in[j][i]
+		}
+
+		res[i] = row
 	}
 
 	return res
