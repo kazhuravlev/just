@@ -312,3 +312,244 @@ func TestSliceFillElem(t *testing.T) {
 	res := just.SliceFillElem(3, "Hello")
 	assert.Equal(t, []string{"Hello", "Hello", "Hello"}, res)
 }
+
+func TestSliceFindFirst(t *testing.T) {
+	table := []struct {
+		name     string
+		in       []int
+		fn       func(int, int) bool
+		exp      int
+		expIndex int
+	}{
+		{
+			name:     "empty",
+			in:       nil,
+			fn:       nil,
+			exp:      0,
+			expIndex: -1,
+		},
+		{
+			name: "found_index_0",
+			in:   []int{1, 1, 1},
+			fn: func(i int, v int) bool {
+				return v == 1
+			},
+			exp:      1,
+			expIndex: 0,
+		},
+		{
+			name: "found_index_2",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 1
+			},
+			exp:      1,
+			expIndex: 2,
+		},
+		{
+			name: "not_found",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 42
+			},
+			exp:      0,
+			expIndex: -1,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res, found := just.SliceFindFirst(row.in, row.fn)
+			assert.Equal(t, row.expIndex, found)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceFindLast(t *testing.T) {
+	table := []struct {
+		name     string
+		in       []int
+		fn       func(int, int) bool
+		exp      int
+		expIndex int
+	}{
+		{
+			name:     "empty",
+			in:       nil,
+			fn:       nil,
+			exp:      0,
+			expIndex: -1,
+		},
+		{
+			name: "found_index_0",
+			in:   []int{1, 2, 3},
+			fn: func(i int, v int) bool {
+				return v == 1
+			},
+			exp:      1,
+			expIndex: 0,
+		},
+		{
+			name: "found_index_2",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 1
+			},
+			exp:      1,
+			expIndex: 2,
+		},
+		{
+			name: "not_found",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 42
+			},
+			exp:      0,
+			expIndex: -1,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res, found := just.SliceFindLast(row.in, row.fn)
+			assert.Equal(t, row.expIndex, found)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceFindAllElements(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int, int) bool
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   nil,
+			exp:  []int{},
+		},
+		{
+			name: "found_gte_2",
+			in:   []int{1, 2, 3},
+			fn: func(i int, v int) bool {
+				return v >= 2
+			},
+			exp: []int{2, 3},
+		},
+		{
+			name: "not_found",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 42
+			},
+			exp: []int{},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceFindAllElements(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceFindAllIndexes(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int, int) bool
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   nil,
+			exp:  []int{},
+		},
+		{
+			name: "found_gte_20",
+			in:   []int{11, 21, 31},
+			fn: func(i int, v int) bool {
+				return v >= 20
+			},
+			exp: []int{1, 2},
+		},
+		{
+			name: "not_found",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 42
+			},
+			exp: []int{},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceFindAllIndexes(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceFindAll(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int, int) bool
+		exp  []just.SliceElem[int]
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   nil,
+			exp:  []just.SliceElem[int]{},
+		},
+		{
+			name: "found_gte_20",
+			in:   []int{11, 21, 31},
+			fn: func(i int, v int) bool {
+				return v >= 20
+			},
+			exp: []just.SliceElem[int]{
+				{Idx: 1, Val: 21},
+				{Idx: 2, Val: 31},
+			},
+		},
+		{
+			name: "not_found",
+			in:   []int{3, 2, 1},
+			fn: func(i int, v int) bool {
+				return v == 42
+			},
+			exp: []just.SliceElem[int]{},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceFindAll(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}

@@ -235,3 +235,82 @@ func SliceChunkEvery[T any](in []T, every int) [][]T {
 		return i%every == 0
 	})
 }
+
+// SliceFindFirst return first elem from `in` that fn(index, elem) == true.
+// returns index of found elem or -1 if elem not found.
+func SliceFindFirst[T any](in []T, fn func(i int, elem T) bool) (T, int) {
+	for i := range in {
+		if fn(i, in[i]) {
+			return in[i], i
+		}
+	}
+
+	var v T
+	return v, -1
+}
+
+// SliceFindLast return last elem from `in` that fn(index, elem) == true.
+// returns index of found elem or -1 if elem not found.
+func SliceFindLast[T any](in []T, fn func(i int, elem T) bool) (T, int) {
+	for i := len(in) - 1; i != -1; i-- {
+		if fn(i, in[i]) {
+			return in[i], i
+		}
+	}
+
+	var v T
+	return v, -1
+}
+
+// SliceElem represent element of slice.
+type SliceElem[T any] struct {
+	// Idx is index of element in slice.
+	Idx int
+	// Val is value on slice by Idx index.
+	Val T
+}
+
+// SliceFindAll return all elem and index from `in` that fn(index, elem) == true.
+func SliceFindAll[T any](in []T, fn func(i int, elem T) bool) []SliceElem[T] {
+	res := make([]SliceElem[T], 0, len(in))
+	for i := range in {
+		if !fn(i, in[i]) {
+			continue
+		}
+
+		res = append(res, SliceElem[T]{
+			Idx: i,
+			Val: in[i],
+		})
+	}
+
+	return res
+}
+
+// SliceFindAllElements return all elem from `in` that fn(index, elem) == true.
+func SliceFindAllElements[T any](in []T, fn func(i int, elem T) bool) []T {
+	res := make([]T, 0, len(in))
+	for i := range in {
+		if !fn(i, in[i]) {
+			continue
+		}
+
+		res = append(res, in[i])
+	}
+
+	return res
+}
+
+// SliceFindAllIndexes return all indexes from `in` that fn(index, elem) == true.
+func SliceFindAllIndexes[T any](in []T, fn func(i int, elem T) bool) []int {
+	res := make([]int, 0, len(in))
+	for i := range in {
+		if !fn(i, in[i]) {
+			continue
+		}
+
+		res = append(res, i)
+	}
+
+	return res
+}
