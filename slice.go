@@ -189,3 +189,38 @@ func SliceZip[T any](in ...[]T) [][]T {
 
 	return res
 }
+
+// SliceFillElem returns the slice with len `l` where all elements are equal to
+// `elem`.
+func SliceFillElem[T any](l int, elem T) []T {
+	res := make([]T, l)
+	for i := 0; i < l; i++ {
+		res[i] = elem
+	}
+
+	return res
+}
+
+// SliceChunk split `in` into chunks by fn(index, elem) == true.
+func SliceChunk[T any](in []T, fn func(i int, elem T) bool) [][]T {
+	if len(in) == 0 {
+		return nil
+	}
+
+	res := make([][]T, 0, len(in))
+	var chunk []T
+	for i := range in {
+		if fn(i, in[i]) && len(chunk) != 0 {
+			res = append(res, chunk)
+			chunk = make([]T, 0)
+		}
+
+		chunk = append(chunk, in[i])
+	}
+
+	if len(chunk) != 0 {
+		res = append(res, chunk)
+	}
+
+	return res
+}

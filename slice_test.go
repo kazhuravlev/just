@@ -174,3 +174,71 @@ func TestSliceZip(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceChunk(t *testing.T) {
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int, int) bool
+		exp  [][]int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   nil,
+			exp:  nil,
+		},
+		{
+			name: "split_fn_always_true",
+			in:   []int{1, 2, 3, 4},
+			fn:   func(i int, v int) bool { return true },
+			exp: [][]int{
+				{1},
+				{2},
+				{3},
+				{4},
+			},
+		},
+		{
+			name: "split_fn_always_false",
+			in:   []int{1, 2, 3, 4},
+			fn:   func(i int, v int) bool { return false },
+			exp: [][]int{
+				{1, 2, 3, 4},
+			},
+		},
+		{
+			name: "split_every_2",
+			in:   []int{1, 2, 3, 4},
+			fn:   func(i int, v int) bool { return i%2 == 0 },
+			exp: [][]int{
+				{1, 2},
+				{3, 4},
+			},
+		},
+		{
+			name: "split_every_3",
+			in:   []int{1, 2, 3, 4},
+			fn:   func(i int, v int) bool { return i%3 == 0 },
+			exp: [][]int{
+				{1, 2, 3},
+				{4},
+			},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceChunk(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceFillElem(t *testing.T) {
+	res := just.SliceFillElem(3, "Hello")
+	assert.Equal(t, []string{"Hello", "Hello", "Hello"}, res)
+}
