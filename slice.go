@@ -378,7 +378,7 @@ func SliceRange[T number](start, stop, step T) []T {
 		return nil
 	}
 
-	var res []T
+	res := make([]T, 0, int(Abs((start-stop)/step)))
 	e := start
 	for {
 		if isIncr && e >= stop {

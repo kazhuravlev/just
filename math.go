@@ -49,3 +49,12 @@ func Sum[T number](in ...T) T {
 
 	return acc
 }
+
+// Abs returns abs value of v.
+func Abs[T number](v T) T {
+	if v < 0 {
+		return -v
+	}
+
+	return v
+}
