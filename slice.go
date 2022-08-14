@@ -114,7 +114,7 @@ func Slice2Map[T comparable](in []T) map[T]struct{} {
 // SliceDifference return the difference between `oldSlice` and `newSlice`.
 // Returns only elements which presented in `newSlice` but not presented
 // in `oldSlice`.
-// Example: [1,2,3], [3,4,5] => [4,5]
+// Example: [1,2,3], [3,4,5,5,5] => [4,5,5,5]
 func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
 	if len(oldSlice) == 0 {
 		return newSlice
@@ -134,7 +134,31 @@ func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
 		res = append(res, newSlice[i])
 	}
 
-	return res
+	return SliceUniq(res)
+}
+
+// SliceIntersection returns elements that are presented in both slices.
+// Example: [1,2,3], [2,4,3,3,3] => [2, 3]
+func SliceIntersection[T comparable](oldSlice, newSlice []T) []T {
+	if len(oldSlice) == 0 {
+		return nil
+	}
+
+	if len(newSlice) == 0 {
+		return nil
+	}
+
+	index := Slice2Map(oldSlice)
+	res := make([]T, 0, len(newSlice))
+	for i := range newSlice {
+		if _, ok := index[newSlice[i]]; !ok {
+			continue
+		}
+
+		res = append(res, newSlice[i])
+	}
+
+	return SliceUniq(res)
 }
 
 // SliceWithoutElem returns the slice `in` that not contains `elem`.
@@ -394,4 +418,28 @@ func SliceRange[T number](start, stop, step T) []T {
 	}
 
 	return res
+}
+
+// SliceEqualUnordered returns true when all uniq values from `in1` contains in `in2`.
+// Useful in tests for comparing expected and actual slices.
+// Examples:
+//  - [1,2,3], [2,3,3,3,1,1] => true
+//  - [1], [1,1,1] => true
+//  - [1], [1] => true
+//  - [1], [2] => false
+func SliceEqualUnordered[T comparable](in1, in2 []T) bool {
+	m1 := Slice2Map(in1)
+	m2 := Slice2Map(in2)
+
+	if len(m1) != len(m2) {
+		return false
+	}
+
+	for k := range m1 {
+		if _, ok := m2[k]; !ok {
+			return false
+		}
+	}
+
+	return true
 }

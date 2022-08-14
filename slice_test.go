@@ -616,3 +616,188 @@ func TestSliceRange(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceDifference(t *testing.T) {
+	table := []struct {
+		name     string
+		in1, in2 []int
+		exp      []int
+	}{
+		{
+			name: "empty_both",
+			in1:  nil,
+			in2:  nil,
+			exp:  nil,
+		},
+		{
+			name: "empty_first",
+			in1:  nil,
+			in2:  []int{1, 2, 3},
+			exp:  []int{1, 2, 3},
+		},
+		{
+			name: "empty_second",
+			in1:  []int{1, 2, 3},
+			in2:  nil,
+			exp:  nil,
+		},
+		{
+			name: "equal",
+			in1:  []int{1, 2, 3},
+			in2:  []int{1, 2, 3},
+			exp:  []int{},
+		},
+		{
+			name: "has_diff_1",
+			in1:  []int{1, 2, 3},
+			in2:  []int{1, 2, 3, 4},
+			exp:  []int{4},
+		},
+		{
+			name: "has_diff_2",
+			in1:  []int{1, 2},
+			in2:  []int{1, 2, 3, 4},
+			exp:  []int{3, 4},
+		},
+		{
+			name: "has_diff_3_duplicated",
+			in1:  []int{1, 2},
+			in2:  []int{2, 4, 4, 2, 2, 4},
+			exp:  []int{4},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceDifference(row.in1, row.in2)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceIntersection(t *testing.T) {
+	table := []struct {
+		name     string
+		in1, in2 []int
+		exp      []int
+	}{
+		{
+			name: "empty_both",
+			in1:  nil,
+			in2:  nil,
+			exp:  nil,
+		},
+		{
+			name: "empty_first",
+			in1:  nil,
+			in2:  []int{1, 2, 3},
+			exp:  nil,
+		},
+		{
+			name: "empty_second",
+			in1:  []int{1, 2, 3},
+			in2:  nil,
+			exp:  nil,
+		},
+		{
+			name: "equal",
+			in1:  []int{1, 2, 3},
+			in2:  []int{1, 2, 3},
+			exp:  []int{1, 2, 3},
+		},
+		{
+			name: "has_diff_1",
+			in1:  []int{1, 2, 3},
+			in2:  []int{1, 2, 3, 4},
+			exp:  []int{1, 2, 3},
+		},
+		{
+			name: "has_diff_2",
+			in1:  []int{1, 2},
+			in2:  []int{1, 2, 3, 4},
+			exp:  []int{1, 2},
+		},
+		{
+			name: "has_diff_3_duplicated",
+			in1:  []int{1, 2},
+			in2:  []int{2, 4, 4, 2, 2, 4, 1},
+			exp:  []int{1, 2},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceIntersection(row.in1, row.in2)
+			sort.Ints(res)
+			sort.Ints(row.exp)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceEqualUnordered(t *testing.T) {
+	table := []struct {
+		name     string
+		in1, in2 []int
+		exp      bool
+	}{
+		{
+			name: "empty",
+			in1:  nil,
+			in2:  nil,
+			exp:  true,
+		},
+		{
+			name: "empty_first",
+			in1:  nil,
+			in2:  []int{1},
+			exp:  false,
+		},
+		{
+			name: "empty_second",
+			in1:  []int{1},
+			in2:  nil,
+			exp:  false,
+		},
+		{
+			name: "equal_full",
+			in1:  []int{1},
+			in2:  []int{1},
+			exp:  true,
+		},
+		{
+			name: "equal_dupl",
+			in1:  []int{1, 1, 1},
+			in2:  []int{1},
+			exp:  true,
+		},
+		{
+			name: "equal_dupl2",
+			in1:  []int{1, 1},
+			in2:  []int{1, 1, 1, 1},
+			exp:  true,
+		},
+		{
+			name: "equal2",
+			in1:  []int{1, 1, 2, 3, 2, 1},
+			in2:  []int{1, 2, 3, 3},
+			exp:  true,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceEqualUnordered(row.in1, row.in2)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
