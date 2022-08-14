@@ -53,6 +53,10 @@ func MapFilterValues[K comparable, V any](in map[K]V, fn func(v V) bool) map[K]V
 
 // MapGetKeys returns all keys of map.
 func MapGetKeys[K comparable, V any](m map[K]V) []K {
+	if len(m) == 0 {
+		return nil
+	}
+
 	res := make([]K, len(m))
 	var i int
 	for k := range m {
@@ -65,6 +69,10 @@ func MapGetKeys[K comparable, V any](m map[K]V) []K {
 
 // MapGetValues returns all values of map. Not Uniq, unordered.
 func MapGetValues[K comparable, V any](m map[K]V) []V {
+	if len(m) == 0 {
+		return nil
+	}
+
 	res := make([]V, len(m))
 	var i int
 	for _, v := range m {
@@ -83,6 +91,10 @@ type KV[K comparable, V any] struct {
 
 // MapPairs returns slice of KV structs that contains ket-value pairs.
 func MapPairs[K comparable, V any](m map[K]V) []KV[K, V] {
+	if len(m) == 0 {
+		return nil
+	}
+
 	res := make([]KV[K, V], len(m))
 	var i int
 	for k, v := range m {
