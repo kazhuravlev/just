@@ -12,6 +12,8 @@ import (
 var less = func(a, b int) bool { return a < b }
 
 func TestUniq(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -66,6 +68,8 @@ func TestUniq(t *testing.T) {
 }
 
 func TestSliceReverse(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -105,6 +109,8 @@ func TestSliceReverse(t *testing.T) {
 }
 
 func TestSliceZip(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   [][]int
@@ -176,6 +182,8 @@ func TestSliceZip(t *testing.T) {
 }
 
 func TestSliceChunk(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -239,6 +247,8 @@ func TestSliceChunk(t *testing.T) {
 }
 
 func TestSliceChunkEvery(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name  string
 		in    []int
@@ -309,11 +319,15 @@ func TestSliceChunkEvery(t *testing.T) {
 }
 
 func TestSliceFillElem(t *testing.T) {
+	t.Parallel()
+
 	res := just.SliceFillElem(3, "Hello")
 	assert.Equal(t, []string{"Hello", "Hello", "Hello"}, res)
 }
 
 func TestSliceFindFirstElem(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name     string
 		in       []int
@@ -364,6 +378,8 @@ func TestSliceFindFirstElem(t *testing.T) {
 }
 
 func TestSliceFindLastElem(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name     string
 		in       []int
@@ -414,6 +430,8 @@ func TestSliceFindLastElem(t *testing.T) {
 }
 
 func TestSliceFindAllElements(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -456,6 +474,8 @@ func TestSliceFindAllElements(t *testing.T) {
 }
 
 func TestSliceFindAllIndexes(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -498,6 +518,8 @@ func TestSliceFindAllIndexes(t *testing.T) {
 }
 
 func TestSliceFindAll(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -543,6 +565,8 @@ func TestSliceFindAll(t *testing.T) {
 }
 
 func TestSliceRange(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name              string
 		start, stop, step int
@@ -612,6 +636,8 @@ func TestSliceRange(t *testing.T) {
 }
 
 func TestSliceDifference(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name     string
 		in1, in2 []int
@@ -673,6 +699,8 @@ func TestSliceDifference(t *testing.T) {
 }
 
 func TestSliceIntersection(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name     string
 		in1, in2 []int
@@ -734,6 +762,8 @@ func TestSliceIntersection(t *testing.T) {
 }
 
 func TestSliceEqualUnordered(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name     string
 		in1, in2 []int
@@ -801,6 +831,8 @@ func TestSliceEqualUnordered(t *testing.T) {
 }
 
 func TestSliceChain(t *testing.T) {
+	t.Parallel()
+
 	res1 := just.SliceChain[int]()
 	assert.Equal(t, []int(nil), res1)
 
@@ -809,12 +841,16 @@ func TestSliceChain(t *testing.T) {
 }
 
 func TestSliceSort(t *testing.T) {
+	t.Parallel()
+
 	a := []int{1, 3, 2}
 	just.SliceSort(a, less)
 	assert.Equal(t, []int{1, 2, 3}, a)
 }
 
 func TestSliceElem(t *testing.T) {
+	t.Parallel()
+
 	notExists := just.SliceElem[int]{Idx: -1, Val: 0}
 	existsFirst := just.SliceElem[int]{Idx: 0, Val: 10}
 	existsSecond := just.SliceElem[int]{Idx: 1, Val: 20}
@@ -867,6 +903,8 @@ func TestSliceElem(t *testing.T) {
 }
 
 func TestSliceWithout(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -905,6 +943,8 @@ func TestSliceWithout(t *testing.T) {
 }
 
 func TestSliceUnion(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   [][]int
@@ -946,6 +986,8 @@ func TestSliceUnion(t *testing.T) {
 }
 
 func TestSliceAddNotExists(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -984,6 +1026,8 @@ func TestSliceAddNotExists(t *testing.T) {
 }
 
 func TestSliceContainsElem(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -1022,6 +1066,8 @@ func TestSliceContainsElem(t *testing.T) {
 }
 
 func TestSliceAll(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -1060,6 +1106,8 @@ func TestSliceAll(t *testing.T) {
 }
 
 func TestSliceMap(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int

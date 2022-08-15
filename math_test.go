@@ -8,6 +8,8 @@ import (
 )
 
 func TestMax(t *testing.T) {
+	t.Parallel()
+
 	t.Run("empty_should_be_panicked", func(t *testing.T) {
 		assert.Panics(t, func() {
 			just.Max[int]()
@@ -49,6 +51,8 @@ func TestMax(t *testing.T) {
 }
 
 func TestMin(t *testing.T) {
+	t.Parallel()
+
 	t.Run("empty_should_be_panicked", func(t *testing.T) {
 		assert.Panics(t, func() {
 			just.Min[int]()
@@ -90,6 +94,8 @@ func TestMin(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		in   []int
@@ -129,6 +135,8 @@ func TestSum(t *testing.T) {
 }
 
 func TestAbs(t *testing.T) {
+	t.Parallel()
+
 	assert.Equal(t, 1, just.Abs(1))
 	assert.Equal(t, 1, just.Abs(-1))
 	assert.Equal(t, 0, just.Abs(0))

@@ -8,6 +8,8 @@ import (
 )
 
 func TestNullConstructor(t *testing.T) {
+	t.Parallel()
+
 	t.Run("null_null", func(t *testing.T) {
 		v1 := just.NullNull[int]()
 		assert.Equal(t, just.NullVal[int]{Val: 0, Valid: false}, v1)

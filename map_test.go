@@ -9,6 +9,8 @@ import (
 )
 
 func TestMapMerge(t *testing.T) {
+	t.Parallel()
+
 	alwaysTen := func(...int) int { return 10 }
 
 	table := []struct {
@@ -81,6 +83,8 @@ func TestMapMerge(t *testing.T) {
 }
 
 func TestMapFilterKeys(t *testing.T) {
+	t.Parallel()
+
 	alwaysTrue := func(_ int) bool { return true }
 	alwaysFalse := func(_ int) bool { return false }
 
@@ -144,6 +148,8 @@ func TestMapFilterKeys(t *testing.T) {
 }
 
 func TestMapFilterValues(t *testing.T) {
+	t.Parallel()
+
 	alwaysTrue := func(_ int) bool { return true }
 	alwaysFalse := func(_ int) bool { return false }
 
@@ -207,6 +213,8 @@ func TestMapFilterValues(t *testing.T) {
 }
 
 func TestMapGetKeys(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		m    map[int]int
@@ -242,6 +250,8 @@ func TestMapGetKeys(t *testing.T) {
 }
 
 func TestMapGetValues(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		m    map[int]int
@@ -277,6 +287,8 @@ func TestMapGetValues(t *testing.T) {
 }
 
 func TestMapPairs(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name string
 		m    map[int]int
@@ -315,6 +327,8 @@ func TestMapPairs(t *testing.T) {
 }
 
 func TestMapDefaults(t *testing.T) {
+	t.Parallel()
+
 	table := []struct {
 		name              string
 		in, defaults, exp map[int]int
