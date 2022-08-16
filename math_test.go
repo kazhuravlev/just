@@ -50,6 +50,57 @@ func TestMax(t *testing.T) {
 
 }
 
+func TestMaxOr(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name       string
+		defaultVal int
+		in         []int
+		exp        int
+	}{
+		{
+			name:       "empty_in",
+			defaultVal: -1,
+			in:         []int{},
+			exp:        -1,
+		},
+		{
+			name:       "case1",
+			defaultVal: -1,
+			in:         []int{1},
+			exp:        1,
+		},
+		{
+			name:       "case2",
+			defaultVal: -100,
+			in:         []int{-1, 0, 1},
+			exp:        1,
+		},
+		{
+			name:       "case3",
+			defaultVal: -100,
+			in:         []int{-1, -1, -10},
+			exp:        -1,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MaxOr(row.defaultVal, row.in...)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestMaxDefault(t *testing.T) {
+	assert.Equal(t, 3, just.MaxDefault(1, 2, 3))
+	assert.Equal(t, 0, just.MaxDefault[int]())
+}
+
 func TestMin(t *testing.T) {
 	t.Parallel()
 
@@ -90,7 +141,57 @@ func TestMin(t *testing.T) {
 			assert.Equal(t, row.exp, res)
 		})
 	}
+}
 
+func TestMinOr(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name       string
+		defaultVal int
+		in         []int
+		exp        int
+	}{
+		{
+			name:       "empty_in",
+			defaultVal: -1,
+			in:         []int{},
+			exp:        -1,
+		},
+		{
+			name:       "case1",
+			defaultVal: -1,
+			in:         []int{1},
+			exp:        1,
+		},
+		{
+			name:       "case2",
+			defaultVal: -100,
+			in:         []int{-1, 0, 1},
+			exp:        -1,
+		},
+		{
+			name:       "case3",
+			defaultVal: -100,
+			in:         []int{-1, -1, -10},
+			exp:        -10,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MinOr(row.defaultVal, row.in...)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestMinDefault(t *testing.T) {
+	assert.Equal(t, 1, just.MinDefault(1, 2, 3))
+	assert.Equal(t, 0, just.MinDefault[int]())
 }
 
 func TestSum(t *testing.T) {
