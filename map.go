@@ -131,3 +131,14 @@ func MapCopy[K comparable, V any](m map[K]V) map[K]V {
 
 	return res
 }
+
+// MapMap apply fn to all kv pairs from in.
+func MapMap[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1)) map[K1]V1 {
+	res := make(map[K1]V1, len(in))
+	for k, v := range in {
+		k1, v1 := fn(k, v)
+		res[k1] = v1
+	}
+
+	return res
+}

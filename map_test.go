@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"sort"
+	"strconv"
 	"testing"
 )
 
@@ -368,4 +369,20 @@ func TestMapDefaults(t *testing.T) {
 			assert.Equal(t, row.exp, res)
 		})
 	}
+}
+
+func TestMapMap(t *testing.T) {
+	in := map[int]int{
+		1: 11,
+		2: 22,
+	}
+	res := just.MapMap(in, func(k, v int) (string, string) {
+		return strconv.Itoa(k), strconv.Itoa(v)
+	})
+	exp := map[string]string{
+		"1": "11",
+		"2": "22",
+	}
+
+	require.Equal(t, exp, res)
 }
