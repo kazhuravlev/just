@@ -371,31 +371,43 @@ func TestMapDefaults(t *testing.T) {
 	}
 }
 
-func TestMapContainsKey(t *testing.T) {
+func TestMapContainsKeysAny(t *testing.T) {
 	t.Parallel()
 
 	table := []struct {
 		name string
 		in   map[int]int
-		key  int
+		keys []int
 		exp  bool
 	}{
 		{
-			name: "empty",
+			name: "empty_both",
 			in:   nil,
-			key:  10,
+			keys: nil,
 			exp:  false,
 		},
 		{
-			name: "exists_key",
+			name: "empty_keys",
 			in:   map[int]int{1: 1, 2: 2},
-			key:  1,
+			keys: nil,
+			exp:  false,
+		},
+		{
+			name: "empty_in",
+			in:   nil,
+			keys: []int{1, 2, 3},
+			exp:  false,
+		},
+		{
+			name: "one_key_is_exists",
+			in:   map[int]int{1: 1, 2: 2},
+			keys: []int{1, 100},
 			exp:  true,
 		},
 		{
-			name: "not_exists_key",
+			name: "all_keys_not_exists",
 			in:   map[int]int{1: 1, 2: 2},
-			key:  100,
+			keys: []int{100, 200, 300},
 			exp:  false,
 		},
 	}
@@ -405,7 +417,65 @@ func TestMapContainsKey(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			t.Parallel()
 
-			res := just.MapContainsKey(row.in, row.key)
+			res := just.MapContainsKeysAny(row.in, row.keys)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestMapContainsKeysAll(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name string
+		in   map[int]int
+		keys []int
+		exp  bool
+	}{
+		{
+			name: "empty_both",
+			in:   nil,
+			keys: nil,
+			exp:  false,
+		},
+		{
+			name: "empty_keys",
+			in:   map[int]int{1: 1, 2: 2},
+			keys: nil,
+			exp:  false,
+		},
+		{
+			name: "empty_in",
+			in:   nil,
+			keys: []int{1, 2, 3},
+			exp:  false,
+		},
+		{
+			name: "one_key_is_exists",
+			in:   map[int]int{1: 1, 2: 2},
+			keys: []int{1, 100},
+			exp:  false,
+		},
+		{
+			name: "all_keys_not_exists",
+			in:   map[int]int{1: 1, 2: 2},
+			keys: []int{100, 200, 300},
+			exp:  false,
+		},
+		{
+			name: "all_keys_is_exists",
+			in:   map[int]int{1: 1, 2: 2},
+			keys: []int{1, 2},
+			exp:  true,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapContainsKeysAll(row.in, row.keys)
 			assert.Equal(t, row.exp, res)
 		})
 	}

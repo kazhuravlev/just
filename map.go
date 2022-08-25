@@ -143,9 +143,47 @@ func MapMap[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1)) map
 	return res
 }
 
-// MapContainsKey returns true if key is exists in map.
+// MapContainsKey returns true if key is exists in the map.
 func MapContainsKey[K comparable, V any](m map[K]V, key K) bool {
 	_, ok := m[key]
 
 	return ok
+}
+
+// MapContainsKeysAny returns true when at least one key exists in the map.
+func MapContainsKeysAny[K comparable, V any](m map[K]V, keys []K) bool {
+	if len(keys) == 0 {
+		return false
+	}
+
+	if len(m) == 0 {
+		return false
+	}
+
+	for i := range keys {
+		if MapContainsKey(m, keys[i]) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// MapContainsKeysAll returns true when at all keys exists in the map.
+func MapContainsKeysAll[K comparable, V any](m map[K]V, keys []K) bool {
+	if len(keys) == 0 {
+		return false
+	}
+
+	if len(m) == 0 {
+		return false
+	}
+
+	for i := range keys {
+		if !MapContainsKey(m, keys[i]) {
+			return false
+		}
+	}
+
+	return true
 }
