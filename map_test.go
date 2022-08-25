@@ -371,6 +371,46 @@ func TestMapDefaults(t *testing.T) {
 	}
 }
 
+func TestMapContainsKey(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name string
+		in   map[int]int
+		key  int
+		exp  bool
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			key:  10,
+			exp:  false,
+		},
+		{
+			name: "exists_key",
+			in:   map[int]int{1: 1, 2: 2},
+			key:  1,
+			exp:  true,
+		},
+		{
+			name: "not_exists_key",
+			in:   map[int]int{1: 1, 2: 2},
+			key:  100,
+			exp:  false,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapContainsKey(row.in, row.key)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
 func TestMapMap(t *testing.T) {
 	in := map[int]int{
 		1: 11,
