@@ -1144,3 +1144,57 @@ func TestSliceMap(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceGroupBy(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int) string
+		exp  map[string][]int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn: func(v int) string {
+				return strconv.Itoa(v % 2)
+			},
+			exp: nil,
+		},
+		{
+			name: "group_odd_even",
+			in:   []int{1, 2, 3, 4},
+			fn: func(v int) string {
+				return strconv.Itoa(v % 2)
+			},
+			exp: map[string][]int{
+				"0": {2, 4},
+				"1": {1, 3},
+			},
+		},
+		{
+			name: "group_nothing",
+			in:   []int{1, 2, 3, 4},
+			fn: func(v int) string {
+				return strconv.Itoa(v)
+			},
+			exp: map[string][]int{
+				"1": {1},
+				"2": {2},
+				"3": {3},
+				"4": {4},
+			},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceGroupBy(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}

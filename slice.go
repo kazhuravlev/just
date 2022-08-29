@@ -487,3 +487,18 @@ func SliceSortCopy[T any](in []T, less func(a, b T) bool) []T {
 
 	return res
 }
+
+// SliceGroupBy will group all
+func SliceGroupBy[K comparable, V any](in []V, fn func(V) K) map[K][]V {
+	if len(in) == 0 {
+		return nil
+	}
+
+	res := make(map[K][]V, len(in))
+	for i := range in {
+		key := fn(in[i])
+		res[key] = append(res[key], in[i])
+	}
+
+	return res
+}
