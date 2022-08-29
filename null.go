@@ -8,8 +8,8 @@ import (
 
 // NullVal represent the nullable value for this type.
 type NullVal[T any] struct {
-	Val   T
-	Valid bool
+	Val   T    `json:"v"`
+	Valid bool `json:"ok"`
 }
 
 // Scan implements the Scanner interface.
