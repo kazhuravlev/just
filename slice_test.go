@@ -1,6 +1,7 @@
 package just_test
 
 import (
+	"errors"
 	"fmt"
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
@@ -1140,6 +1141,61 @@ func TestSliceMap(t *testing.T) {
 			t.Parallel()
 
 			res := just.SliceMap(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceMapErr(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int) (string, error)
+		exp  []string
+		err  bool
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn: func(v int) (string, error) {
+				return "", nil
+			},
+			exp: nil,
+			err: false,
+		},
+		{
+			name: "case1",
+			in:   []int{1, 2, 3},
+			fn: func(v int) (string, error) {
+				return strconv.Itoa(v), nil
+			},
+			exp: []string{"1", "2", "3"},
+			err: false,
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			fn: func(v int) (string, error) {
+				return "", errors.New("the sky is falling")
+			},
+			exp: nil,
+			err: true,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res, err := just.SliceMapErr(row.in, row.fn)
+			if row.err {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
 			assert.Equal(t, row.exp, res)
 		})
 	}

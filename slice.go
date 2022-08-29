@@ -28,6 +28,25 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	return res
 }
 
+// SliceMapErr do the same thing as SliceMap, but return error when error
+// occurs in fn.
+func SliceMapErr[T any, V any](in []T, fn func(T) (V, error)) ([]V, error) {
+	if len(in) == 0 {
+		return nil, nil
+	}
+
+	res := make([]V, len(in))
+	var err error
+	for i := range in {
+		res[i], err = fn(in[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return res, nil
+}
+
 // SliceFilter returns slice of values from `in` where `fn(elem) == true`.
 func SliceFilter[T any](in []T, fn func(T) bool) []T {
 	if len(in) == 0 {
