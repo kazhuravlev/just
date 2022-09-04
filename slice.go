@@ -28,6 +28,18 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	return res
 }
 
+// SliceApply handle all elements from `in` by function `fn`. Function apply
+// sequentially.
+func SliceApply[T any](in []T, fn func(T)) {
+	if len(in) == 0 {
+		return
+	}
+
+	for i := range in {
+		fn(in[i])
+	}
+}
+
 // SliceMapErr do the same thing as SliceMap, but return error when error
 // occurs in fn.
 func SliceMapErr[T any, V any](in []T, fn func(T) (V, error)) ([]V, error) {
