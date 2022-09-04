@@ -30,13 +30,13 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 
 // SliceApply handle all elements from `in` by function `fn`. Function apply
 // sequentially.
-func SliceApply[T any](in []T, fn func(T)) {
+func SliceApply[T any](in []T, fn func(int, T)) {
 	if len(in) == 0 {
 		return
 	}
 
 	for i := range in {
-		fn(in[i])
+		fn(i, in[i])
 	}
 }
 

@@ -1150,7 +1150,7 @@ func TestSliceApply(t *testing.T) {
 	t.Parallel()
 
 	var s int
-	just.SliceApply([]int{1, 2, 3}, func(v int) { s += v })
+	just.SliceApply([]int{1, 2, 3}, func(idx int, v int) { s += v })
 	assert.Equal(t, 6, s)
 }
 
