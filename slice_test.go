@@ -1106,6 +1106,46 @@ func TestSliceAll(t *testing.T) {
 	}
 }
 
+func TestSlice2MapFn(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int, int) (string, string)
+		exp  map[string]string
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   func(k, v int) (string, string) { return strconv.Itoa(k), strconv.Itoa(v) },
+			exp:  map[string]string{},
+		},
+		{
+			name: "uniq_values",
+			in:   []int{10, 20, 30},
+			fn:   func(k, v int) (string, string) { return strconv.Itoa(v), strconv.Itoa(k) },
+			exp:  map[string]string{"10": "0", "20": "1", "30": "2"},
+		},
+		{
+			name: "non_uniq_values",
+			in:   []int{10, 10, 10},
+			fn:   func(k, v int) (string, string) { return strconv.Itoa(v), strconv.Itoa(k) },
+			exp:  map[string]string{"10": "2"},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.Slice2MapFn(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
 func TestSliceMap(t *testing.T) {
 	t.Parallel()
 

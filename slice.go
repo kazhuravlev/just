@@ -533,3 +533,15 @@ func SliceGroupBy[K comparable, V any](in []V, fn func(V) K) map[K][]V {
 
 	return res
 }
+
+// Slice2MapFn apply fn to every elem. fn should return key and value, which
+// will be applied to result map.
+func Slice2MapFn[T any, K comparable, V any](in []T, fn func(idx int, elem T) (K, V)) map[K]V {
+	m := make(map[K]V, len(in))
+	for i := range in {
+		k, v := fn(i, in[i])
+		m[k] = v
+	}
+
+	return m
+}
