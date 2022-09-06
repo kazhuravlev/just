@@ -545,3 +545,20 @@ func Slice2MapFn[T any, K comparable, V any](in []T, fn func(idx int, elem T) (K
 
 	return m
 }
+
+// Slice2MapFnErr apply fn to every elem. fn should return key and value, which
+// will be applied to result map. return error when at least one fn returns an
+// error.
+func Slice2MapFnErr[T any, K comparable, V any](in []T, fn func(idx int, elem T) (K, V, error)) (map[K]V, error) {
+	m := make(map[K]V, len(in))
+	for i := range in {
+		k, v, err := fn(i, in[i])
+		if err != nil {
+			return nil, err
+		}
+
+		m[k] = v
+	}
+
+	return m, nil
+}

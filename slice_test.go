@@ -1146,6 +1146,56 @@ func TestSlice2MapFn(t *testing.T) {
 	}
 }
 
+func TestSlice2MapFnErr(t *testing.T) {
+	t.Parallel()
+
+	atoi := func(k int, v string) (int, int, error) {
+		x, err := strconv.Atoi(v)
+		return k, x, err
+	}
+
+	t.Run("error_case", func(t *testing.T) {
+		res, err := just.Slice2MapFnErr([]string{"1", "lol", "2"}, atoi)
+		require.Error(t, err)
+		require.Empty(t, res)
+	})
+
+	table := []struct {
+		name string
+		in   []string
+		fn   func(int, string) (int, int, error)
+		exp  map[int]int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   atoi,
+			exp:  map[int]int{},
+		},
+		{
+			name: "uniq_values",
+			in:   []string{"10", "20", "30"},
+			fn:   atoi,
+			exp: map[int]int{
+				0: 10,
+				1: 20,
+				2: 30,
+			},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res, err := just.Slice2MapFnErr(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+			assert.NoError(t, err)
+		})
+	}
+}
+
 func TestSliceMap(t *testing.T) {
 	t.Parallel()
 
