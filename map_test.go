@@ -496,3 +496,15 @@ func TestMapMap(t *testing.T) {
 
 	require.Equal(t, exp, res)
 }
+
+func TestMapApply(t *testing.T) {
+	var callCounter int
+	just.MapApply(map[int]int{
+		1: 1,
+		2: 2,
+	}, func(k, v int) {
+		callCounter += 1
+	})
+
+	require.Equal(t, 2, callCounter)
+}

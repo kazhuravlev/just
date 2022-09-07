@@ -187,3 +187,10 @@ func MapContainsKeysAll[K comparable, V any](m map[K]V, keys []K) bool {
 
 	return true
 }
+
+// MapApply apply fn to each kv pair
+func MapApply[K comparable, V any](in map[K]V, fn func(k K, v V)) {
+	for k, v := range in {
+		fn(k, v)
+	}
+}
