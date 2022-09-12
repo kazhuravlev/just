@@ -16,8 +16,7 @@ type NullVal[T any] struct {
 func (nv *NullVal[T]) Scan(value any) error {
 	if v, ok := any(&nv.Val).(sql.Scanner); ok {
 		if err := v.Scan(value); err != nil {
-			var val T
-			nv.Val, nv.Valid = val, false
+			nv.Val, nv.Valid = *new(T), false
 			return err
 		}
 
@@ -26,8 +25,7 @@ func (nv *NullVal[T]) Scan(value any) error {
 	}
 
 	if value == nil {
-		var val T
-		nv.Val, nv.Valid = val, true
+		nv.Val, nv.Valid = *new(T), true
 		return nil
 	}
 
@@ -80,9 +78,8 @@ func Null[T any](val T) NullVal[T] {
 
 // NullNull returns NullVal, which are `NullVal.Valid == false`.
 func NullNull[T any]() NullVal[T] {
-	var val T
 	return NullVal[T]{
-		Val:   val,
+		Val:   *new(T),
 		Valid: false,
 	}
 }

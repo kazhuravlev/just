@@ -305,9 +305,10 @@ type SliceElem[T any] struct {
 
 // ValueOk returns the value and true (when element is exists in slice) or false in other case.
 // Useful for cases like:
-//   if elem, ok := SliceFindFirstElem([]int{1,2,3}, 2); ok{
-//   	fmt.Println(elem)
-//   }
+//
+//	if elem, ok := SliceFindFirstElem([]int{1,2,3}, 2); ok{
+//		fmt.Println(elem)
+//	}
 func (e SliceElem[T]) ValueOk() (T, bool) {
 	return e.Val, e.Idx != -1
 }
@@ -319,7 +320,8 @@ func (e SliceElem[T]) Ok() bool {
 
 // ValueIdx returns value and index as is.
 // Useful for this:
-//   elem, idx := SliceFindFirstElem([]int{1,2,3}, 2).ValueIdx()
+//
+//	elem, idx := SliceFindFirstElem([]int{1,2,3}, 2).ValueIdx()
 func (e SliceElem[T]) ValueIdx() (T, int) {
 	return e.Val, e.Idx
 }
@@ -458,10 +460,10 @@ func SliceRange[T number](start, stop, step T) []T {
 // SliceEqualUnordered returns true when all uniq values from `in1` contains in `in2`.
 // Useful in tests for comparing expected and actual slices.
 // Examples:
-//  - [1,2,3], [2,3,3,3,1,1] => true
-//  - [1], [1,1,1] => true
-//  - [1], [1] => true
-//  - [1], [2] => false
+//   - [1,2,3], [2,3,3,3,1,1] => true
+//   - [1], [1,1,1] => true
+//   - [1], [1] => true
+//   - [1], [2] => false
 func SliceEqualUnordered[T comparable](in1, in2 []T) bool {
 	m1 := Slice2Map(in1)
 	m2 := Slice2Map(in2)
