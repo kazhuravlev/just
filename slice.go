@@ -564,3 +564,28 @@ func Slice2MapFnErr[T any, K comparable, V any](in []T, fn func(idx int, elem T)
 
 	return m, nil
 }
+
+// Slice2Chan make chan with specified capacity from source slice.
+func Slice2Chan[T any](in []T, capacity int) chan T {
+	if len(in) == capacity {
+		return Slice2ChanFill(in)
+	}
+
+	ch := make(chan T, capacity)
+	go func() {
+		for i := range in {
+			ch <- in[i]
+		}
+	}()
+
+	return ch
+}
+
+// Slice2ChanFill make chan from source slice with will already filled by all
+// elements from source slice.
+func Slice2ChanFill[T any](in []T) chan T {
+	ch := make(chan T, len(in))
+	ChanPut(ch, in)
+
+	return ch
+}

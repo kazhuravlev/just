@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"strconv"
 	"testing"
+	"time"
 )
 
 var less = func(a, b int) bool { return a < b }
@@ -1239,9 +1240,17 @@ func TestSliceMap(t *testing.T) {
 func TestSliceApply(t *testing.T) {
 	t.Parallel()
 
-	var s int
-	just.SliceApply([]int{1, 2, 3}, func(idx int, v int) { s += v })
-	assert.Equal(t, 6, s)
+	t.Run("empty", func(t *testing.T) {
+		var s int
+		just.SliceApply([]int{}, func(idx int, v int) { s += v })
+		assert.Equal(t, 0, s)
+	})
+
+	t.Run("case1", func(t *testing.T) {
+		var s int
+		just.SliceApply([]int{1, 2, 3}, func(idx int, v int) { s += v })
+		assert.Equal(t, 6, s)
+	})
 }
 
 func TestSliceMapErr(t *testing.T) {
@@ -1351,4 +1360,52 @@ func TestSliceGroupBy(t *testing.T) {
 			assert.Equal(t, row.exp, res)
 		})
 	}
+}
+
+func TestSlice2Chan(t *testing.T) {
+	t.Run("do_not_run_goroutine_on_capacity_is_equal_to_input_len", func(t *testing.T) {
+		in := []int{1, 2, 3}
+		capacity := len(in)
+		ch := just.Slice2Chan(in, capacity)
+		require.Equal(t, len(in), len(ch))
+
+		res := just.ChanReadN(ch, len(in))
+		require.Equal(t, in, res)
+	})
+
+	t.Run("capacity_is_lt_input_len", func(t *testing.T) {
+		in := []int{10, 20, 30}
+		capacity := 1
+		ch := just.Slice2Chan(in, capacity)
+		time.Sleep(100 * time.Microsecond)
+
+		// NOTE(zhuravlev): floating tests
+		require.Equal(t, capacity, len(ch))
+
+		res := just.ChanReadN(ch, capacity)
+		require.Equal(t, []int{10}, res)
+	})
+
+	t.Run("capacity_is_gt_input_len", func(t *testing.T) {
+		in := []int{10, 20, 30}
+		capacity := 100
+		ch := just.Slice2Chan(in, capacity)
+		time.Sleep(100 * time.Microsecond)
+
+		// NOTE(zhuravlev): floating tests
+		require.Equal(t, len(in), len(ch))
+		require.Equal(t, capacity, cap(ch))
+
+		res := just.ChanReadN(ch, len(in))
+		require.Equal(t, in, res)
+	})
+}
+
+func TestSlice2ChanFill(t *testing.T) {
+	in := []int{1, 2, 3}
+	ch := just.Slice2ChanFill(in)
+	require.Equal(t, len(in), len(ch))
+
+	res := just.ChanReadN(ch, len(in))
+	require.Equal(t, in, res)
 }
