@@ -21,3 +21,13 @@ func ChanPut[T any](ch chan T, elems []T) {
 		ch <- elems[i]
 	}
 }
+
+// ChanReadN will read N messages from channel and return the result slice.
+func ChanReadN[T any](ch chan T, n int) []T {
+	res := make([]T, n)
+	for i := 0; i < n; i++ {
+		res[i] = <-ch
+	}
+
+	return res
+}
