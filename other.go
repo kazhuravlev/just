@@ -37,3 +37,12 @@ func Bool[T builtin](v T) bool {
 
 	return false
 }
+
+// Must will panic on error after calling typical function.
+func Must[T any](val T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+
+	return val
+}

@@ -1,10 +1,22 @@
 package just_test
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"io"
+	"regexp"
 	"testing"
 )
+
+func ExampleMust() {
+	val := just.Must(io.ReadAll(bytes.NewBufferString("this is body!")))
+	fmt.Println(string(val))
+	// Output:
+	// this is body!
+}
 
 func TestBool(t *testing.T) {
 	t.Parallel()
@@ -60,5 +72,20 @@ func TestBool(t *testing.T) {
 		assert.True(t, just.Bool("1"))
 
 		assert.False(t, just.Bool(""))
+	})
+}
+
+func TestMust(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		const str = "this is body!"
+
+		val := just.Must(io.ReadAll(bytes.NewBufferString(str)))
+		assert.Equal(t, str, string(val))
+	})
+
+	t.Run("panic", func(t *testing.T) {
+		require.Panics(t, func() {
+			just.Must(regexp.Compile("["))
+		})
 	})
 }
