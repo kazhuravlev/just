@@ -143,6 +143,21 @@ func MapMap[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1)) map
 	return res
 }
 
+// MapMapErr apply fn to all kv pairs from in.
+func MapMapErr[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1, error)) (map[K1]V1, error) {
+	res := make(map[K1]V1, len(in))
+	for k, v := range in {
+		k1, v1, err := fn(k, v)
+		if err != nil {
+			return nil, err
+		}
+
+		res[k1] = v1
+	}
+
+	return res, nil
+}
+
 // MapContainsKey returns true if key is exists in the map.
 func MapContainsKey[K comparable, V any](m map[K]V, key K) bool {
 	_, ok := m[key]

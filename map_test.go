@@ -497,6 +497,40 @@ func TestMapMap(t *testing.T) {
 	require.Equal(t, exp, res)
 }
 
+func TestMapMapErr(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		in := map[int]string{
+			1: "11",
+			2: "22",
+		}
+		res, err := just.MapMapErr(in, func(k int, v string) (int, int, error) {
+			vInt, err := strconv.Atoi(v)
+			return k, vInt, err
+		})
+		exp := map[int]int{
+			1: 11,
+			2: 22,
+		}
+
+		require.NoError(t, err)
+		require.Equal(t, exp, res)
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		in := map[int]string{
+			1: "11",
+			2: "not-a-number",
+		}
+		res, err := just.MapMapErr(in, func(k int, v string) (int, int, error) {
+			vInt, err := strconv.Atoi(v)
+			return k, vInt, err
+		})
+
+		require.Error(t, err)
+		require.Empty(t, res)
+	})
+}
+
 func TestMapApply(t *testing.T) {
 	var callCounter int
 	just.MapApply(map[int]int{
