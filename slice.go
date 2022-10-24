@@ -589,3 +589,8 @@ func Slice2ChanFill[T any](in []T) chan T {
 
 	return ch
 }
+
+// SliceFromElem return a slice which contains only one element `elem`.
+func SliceFromElem[T any](elem T) []T {
+	return []T{elem}
+}

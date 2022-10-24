@@ -1409,3 +1409,10 @@ func TestSlice2ChanFill(t *testing.T) {
 	res := just.ChanReadN(ch, len(in))
 	require.Equal(t, in, res)
 }
+
+func TestSliceFromElem(t *testing.T) {
+	elem := 10
+	res := just.SliceFromElem(elem)
+
+	require.Equal(t, []int{elem}, res)
+}
