@@ -48,7 +48,7 @@ func TestErrIsAnyOf(t *testing.T) {
 
 	for _, row := range table {
 		t.Run("", func(t *testing.T) {
-			res := just.ErrIsAnyOf(row.err, row.errSlice)
+			res := just.ErrIsAnyOf(row.err, row.errSlice...)
 			assert.Equal(t, row.exp, res)
 		})
 	}
@@ -93,7 +93,7 @@ func TestErrIsNotAnyOf(t *testing.T) {
 
 	for _, row := range table {
 		t.Run("", func(t *testing.T) {
-			res := just.ErrIsNotAnyOf(row.err, row.errSlice)
+			res := just.ErrIsNotAnyOf(row.err, row.errSlice...)
 			assert.Equal(t, row.exp, res)
 		})
 	}
