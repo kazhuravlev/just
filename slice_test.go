@@ -1416,3 +1416,46 @@ func TestSliceFromElem(t *testing.T) {
 
 	require.Equal(t, []int{elem}, res)
 }
+
+func TestSliceGetFirstN(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		in       []int
+		maxElems int
+		exp      []int
+	}{
+		{
+			in:       nil,
+			maxElems: 0,
+			exp:      nil,
+		},
+		{
+			in:       []int{1},
+			maxElems: 0,
+			exp:      []int{},
+		},
+		{
+			in:       []int{1},
+			maxElems: 1,
+			exp:      []int{1},
+		},
+		{
+			in:       []int{1},
+			maxElems: 10,
+			exp:      []int{1},
+		},
+		{
+			in:       []int{1, 2, 3},
+			maxElems: 10,
+			exp:      []int{1, 2, 3},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.SliceGetFirstN(row.in, row.maxElems)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}

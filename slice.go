@@ -594,3 +594,17 @@ func Slice2ChanFill[T any](in []T) chan T {
 func SliceFromElem[T any](elem T) []T {
 	return []T{elem}
 }
+
+// SliceGetFirstN return a subslice of source slice, which will contains not
+// more than `maxElems` items.
+func SliceGetFirstN[T any](in []T, maxElems int) []T {
+	if maxElems < 0 {
+		panic("maxElems should be >= 0")
+	}
+
+	if len(in) < maxElems {
+		return in
+	}
+
+	return in[:maxElems]
+}
