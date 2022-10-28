@@ -209,3 +209,16 @@ func MapApply[K comparable, V any](in map[K]V, fn func(k K, v V)) {
 		fn(k, v)
 	}
 }
+
+// MapJoin will create a new map containing all key-value pairs from app input
+// maps. If several maps have duplicate keys - the last write wins.
+func MapJoin[K comparable, V any](maps ...map[K]V) map[K]V {
+	res := make(map[K]V)
+	for i := range maps {
+		for k, v := range maps[i] {
+			res[k] = v
+		}
+	}
+
+	return res
+}

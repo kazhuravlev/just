@@ -1,12 +1,13 @@
 package just_test
 
 import (
-	"github.com/kazhuravlev/just"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"sort"
 	"strconv"
 	"testing"
+
+	"github.com/kazhuravlev/just"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMapMerge(t *testing.T) {
@@ -541,4 +542,51 @@ func TestMapApply(t *testing.T) {
 	})
 
 	require.Equal(t, 2, callCounter)
+}
+
+func TestMapJoin(t *testing.T) {
+	table := []struct {
+		maps []map[int]int
+		exp  map[int]int
+	}{
+		{
+			maps: nil,
+			exp:  map[int]int{},
+		},
+		{
+			maps: []map[int]int{},
+			exp:  map[int]int{},
+		},
+		{
+			maps: []map[int]int{
+				{1: 1},
+				{2: 2},
+				{3: 3},
+			},
+			exp: map[int]int{1: 1, 2: 2, 3: 3},
+		},
+		{
+			maps: []map[int]int{
+				{1: 1},
+				{1: 2},
+				{1: 3},
+			},
+			exp: map[int]int{1: 3},
+		},
+		{
+			maps: []map[int]int{
+				{1: 1},
+				{},
+				nil,
+			},
+			exp: map[int]int{1: 1},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.MapJoin(row.maps...)
+			require.Equal(t, row.exp, res)
+		})
+	}
 }
