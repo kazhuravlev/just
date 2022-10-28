@@ -222,3 +222,14 @@ func MapJoin[K comparable, V any](maps ...map[K]V) map[K]V {
 
 	return res
 }
+
+// MapGetDefault return value for given key or default value, if key not
+// present in source map.
+func MapGetDefault[K comparable, V any](in map[K]V, key K, defaultVal V) V {
+	v, ok := in[key]
+	if !ok {
+		return defaultVal
+	}
+
+	return v
+}

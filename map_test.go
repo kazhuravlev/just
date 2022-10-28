@@ -590,3 +590,38 @@ func TestMapJoin(t *testing.T) {
 		})
 	}
 }
+
+func TestMapGetDefault(t *testing.T) {
+	table := []struct {
+		in     map[int]int
+		key    int
+		defVal int
+		exp    int
+	}{
+		{
+			in:     nil,
+			key:    10,
+			defVal: 7,
+			exp:    7,
+		},
+		{
+			in:     map[int]int{1: 1},
+			key:    1,
+			defVal: 2,
+			exp:    1,
+		},
+		{
+			in:     map[int]int{1: 1},
+			key:    10,
+			defVal: 7,
+			exp:    7,
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.MapGetDefault(row.in, row.key, row.defVal)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
