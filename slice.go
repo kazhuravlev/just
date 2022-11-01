@@ -1,6 +1,8 @@
 package just
 
-import "sort"
+import (
+	"sort"
+)
 
 // SliceUniq returns only unique values from `in`.
 func SliceUniq[T comparable](in []T) []T {
@@ -607,4 +609,12 @@ func SliceGetFirstN[T any](in []T, maxElems int) []T {
 	}
 
 	return in[:maxElems]
+}
+
+// SliceCopy return a copy of source slice.
+func SliceCopy[T any](in []T) []T {
+	res := make([]T, len(in))
+	copy(res, in)
+
+	return res
 }

@@ -1459,3 +1459,35 @@ func TestSliceGetFirstN(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceCopy(t *testing.T) {
+	table := []struct {
+		in  []int
+		exp []int
+	}{
+		{
+			in:  nil,
+			exp: []int{},
+		},
+		{
+			in:  []int{},
+			exp: []int{},
+		},
+		{
+			in:  []int{1},
+			exp: []int{1},
+		},
+		{
+			in:  []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			exp: []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.SliceCopy(row.in)
+
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
