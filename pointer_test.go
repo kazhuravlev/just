@@ -47,4 +47,11 @@ func TestPointerUnwrapDefault(t *testing.T) {
 			assert.Equal(t, row.exp, res)
 		})
 	}
+
+	type Data struct {
+		Value int
+	}
+
+	res := just.PointerUnwrapDefault((*Data)(nil), Data{42})
+	assert.Equal(t, Data{42}, res)
 }

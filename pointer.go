@@ -12,7 +12,7 @@ func PointerUnwrap[T any](in *T) T {
 
 // PointerUnwrapDefault returns value from pointer or defaultVal when input is
 // empty pointer.
-func PointerUnwrapDefault[T builtin | *any](in *T, defaultVal T) T {
+func PointerUnwrapDefault[T builtin | any](in *T, defaultVal T) T {
 	if in == nil {
 		return defaultVal
 	}
