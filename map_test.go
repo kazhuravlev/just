@@ -625,3 +625,32 @@ func TestMapGetDefault(t *testing.T) {
 		})
 	}
 }
+
+func TestMapNotNil(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		in  map[int]int
+		exp map[int]int
+	}{
+		{
+			in:  nil,
+			exp: map[int]int{},
+		},
+		{
+			in:  map[int]int{},
+			exp: map[int]int{},
+		},
+		{
+			in:  map[int]int{1: 2},
+			exp: map[int]int{1: 2},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.MapNotNil(row.in)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}

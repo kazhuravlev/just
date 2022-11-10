@@ -233,3 +233,13 @@ func MapGetDefault[K comparable, V any](in map[K]V, key K, defaultVal V) V {
 
 	return v
 }
+
+// MapNotNil return source map when it is not nil or create empty
+// instance of this type.
+func MapNotNil[T map[K]V, K comparable, V any](in T) T {
+	if in == nil {
+		return make(T, 0)
+	}
+
+	return in
+}
