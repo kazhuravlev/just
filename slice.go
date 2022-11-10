@@ -262,6 +262,16 @@ func SliceFillElem[T any](l int, elem T) []T {
 	return res
 }
 
+// SliceNotNil return source slice when it is not nil or create empty
+// instance of this type.
+func SliceNotNil[T any](in []T) []T {
+	if in == nil {
+		return make([]T, 0)
+	}
+
+	return in
+}
+
 // SliceChunk split `in` into chunks by fn(index, elem) == true.
 func SliceChunk[T any](in []T, fn func(i int, elem T) bool) [][]T {
 	if len(in) == 0 {

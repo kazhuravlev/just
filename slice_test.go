@@ -327,6 +327,35 @@ func TestSliceFillElem(t *testing.T) {
 	assert.Equal(t, []string{"Hello", "Hello", "Hello"}, res)
 }
 
+func TestSliceNotNil(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		in  []int
+		exp []int
+	}{
+		{
+			in:  nil,
+			exp: []int{},
+		},
+		{
+			in:  []int{},
+			exp: []int{},
+		},
+		{
+			in:  []int{1},
+			exp: []int{1},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.SliceNotNil(row.in)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
 func TestSliceFindFirstElem(t *testing.T) {
 	t.Parallel()
 
