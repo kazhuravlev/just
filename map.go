@@ -243,3 +243,14 @@ func MapNotNil[T map[K]V, K comparable, V any](in T) T {
 
 	return in
 }
+
+// MapDropKeys remove all keys from source map. Map will changed in-place.
+func MapDropKeys[K comparable, V any](in map[K]V, keys ...K) {
+	if len(keys) == 0 || len(in) == 0 {
+		return
+	}
+
+	for i := range keys {
+		delete(in, keys[i])
+	}
+}

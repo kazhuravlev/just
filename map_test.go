@@ -654,3 +654,46 @@ func TestMapNotNil(t *testing.T) {
 		})
 	}
 }
+
+func TestMapDropKeys(t *testing.T) {
+	t.Parallel()
+
+	table := []struct {
+		in   map[int]int
+		keys []int
+		exp  map[int]int
+	}{
+		{
+			in:   nil,
+			keys: nil,
+			exp:  nil,
+		},
+		{
+			in:   map[int]int{},
+			keys: []int{1, 2, 3},
+			exp:  map[int]int{},
+		},
+		{
+			in:   map[int]int{1: 1},
+			keys: []int{2, 3, 4},
+			exp:  map[int]int{1: 1},
+		},
+		{
+			in:   map[int]int{1: 1, 2: 2},
+			keys: []int{1, 2, 3, 4},
+			exp:  map[int]int{},
+		},
+		{
+			in:   map[int]int{1: 1, 2: 2},
+			keys: []int{1, 1, 1, 1, 1, 1},
+			exp:  map[int]int{2: 2},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			just.MapDropKeys(row.in, row.keys...)
+			assert.Equal(t, row.exp, row.in)
+		})
+	}
+}
