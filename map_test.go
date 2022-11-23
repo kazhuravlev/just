@@ -225,12 +225,12 @@ func TestMapGetKeys(t *testing.T) {
 		{
 			name: "empty_nil",
 			m:    nil,
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "empty_len0",
 			m:    map[int]int{},
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "case1",
@@ -262,12 +262,12 @@ func TestMapGetValues(t *testing.T) {
 		{
 			name: "empty_nil",
 			m:    nil,
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "empty_len0",
 			m:    map[int]int{},
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "case1",
@@ -339,7 +339,7 @@ func TestMapDefaults(t *testing.T) {
 			name:     "empty",
 			in:       nil,
 			defaults: nil,
-			exp:      map[int]int{},
+			exp:      nil,
 		},
 		{
 			name:     "empty_defaults",

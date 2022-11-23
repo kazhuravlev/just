@@ -1,9 +1,11 @@
 package just
 
+import "golang.org/x/exp/maps"
+
 // MapMerge returns the map which contains all keys from m1, m2 and values
 // from `fn(key, m1Value, m2Value)`.
-func MapMerge[K comparable, V any](m1, m2 map[K]V, fn func(k K, v1, v2 V) V) map[K]V {
-	m := make(map[K]V, len(m1))
+func MapMerge[M ~map[K]V, K comparable, V any](m1, m2 M, fn func(k K, v1, v2 V) V) M {
+	m := make(M, len(m1))
 	for k, v := range m1 {
 		m[k] = fn(k, v, m2[k])
 	}
@@ -22,8 +24,8 @@ func MapMerge[K comparable, V any](m1, m2 map[K]V, fn func(k K, v1, v2 V) V) map
 
 // MapFilter returns the map which contains elements that
 // `fn(key, value) == true`.
-func MapFilter[K comparable, V any](in map[K]V, fn func(k K, v V) bool) map[K]V {
-	m := make(map[K]V, len(in))
+func MapFilter[M ~map[K]V, K comparable, V any](in M, fn func(k K, v V) bool) M {
+	m := make(M, len(in))
 	for k, v := range in {
 		if !fn(k, v) {
 			continue
@@ -37,7 +39,7 @@ func MapFilter[K comparable, V any](in map[K]V, fn func(k K, v V) bool) map[K]V 
 
 // MapFilterKeys returns the map which contains elements that
 // `fn(key) == true`. That is a simplified version of MapFilter.
-func MapFilterKeys[K comparable, V any](in map[K]V, fn func(k K) bool) map[K]V {
+func MapFilterKeys[M ~map[K]V, K comparable, V any](in M, fn func(k K) bool) M {
 	return MapFilter(in, func(k K, _ V) bool {
 		return fn(k)
 	})
@@ -45,42 +47,20 @@ func MapFilterKeys[K comparable, V any](in map[K]V, fn func(k K) bool) map[K]V {
 
 // MapFilterValues returns the map which contains elements that
 // `fn(value) == true`. That is a simplified version of MapFilter.
-func MapFilterValues[K comparable, V any](in map[K]V, fn func(v V) bool) map[K]V {
+func MapFilterValues[M ~map[K]V, K comparable, V any](in M, fn func(v V) bool) M {
 	return MapFilter(in, func(_ K, v V) bool {
 		return fn(v)
 	})
 }
 
 // MapGetKeys returns all keys of map.
-func MapGetKeys[K comparable, V any](m map[K]V) []K {
-	if len(m) == 0 {
-		return nil
-	}
-
-	res := make([]K, len(m))
-	var i int
-	for k := range m {
-		res[i] = k
-		i++
-	}
-
-	return res
+func MapGetKeys[M ~map[K]V, K comparable, V any](m M) []K {
+	return maps.Keys(m)
 }
 
 // MapGetValues returns all values of map. Not Uniq, unordered.
-func MapGetValues[K comparable, V any](m map[K]V) []V {
-	if len(m) == 0 {
-		return nil
-	}
-
-	res := make([]V, len(m))
-	var i int
-	for _, v := range m {
-		res[i] = v
-		i++
-	}
-
-	return res
+func MapGetValues[M ~map[K]V, K comparable, V any](m M) []V {
+	return maps.Values(m)
 }
 
 // KV represents the key-value of map.
@@ -90,7 +70,7 @@ type KV[K comparable, V any] struct {
 }
 
 // MapPairs returns slice of KV structs that contains ket-value pairs.
-func MapPairs[K comparable, V any](m map[K]V) []KV[K, V] {
+func MapPairs[M ~map[K]V, K comparable, V any](m M) []KV[K, V] {
 	if len(m) == 0 {
 		return nil
 	}
@@ -111,7 +91,7 @@ func MapPairs[K comparable, V any](m map[K]V) []KV[K, V] {
 // MapDefaults returns the map `m` after filling in its non-exists keys by
 // `defaults`.
 // Example: {1:1}, {1:0, 2:2} => {1:1, 2:2}
-func MapDefaults[K comparable, V any](m map[K]V, defaults map[K]V) map[K]V {
+func MapDefaults[M ~map[K]V, K comparable, V any](m, defaults M) M {
 	res := MapCopy(m)
 	for k, v := range defaults {
 		if _, ok := res[k]; !ok {
@@ -123,17 +103,12 @@ func MapDefaults[K comparable, V any](m map[K]V, defaults map[K]V) map[K]V {
 }
 
 // MapCopy returns a shallow copy of map.
-func MapCopy[K comparable, V any](m map[K]V) map[K]V {
-	res := make(map[K]V, len(m))
-	for k, v := range m {
-		res[k] = v
-	}
-
-	return res
+func MapCopy[M ~map[K]V, K comparable, V any](m M) M {
+	return maps.Clone(m)
 }
 
 // MapMap apply fn to all kv pairs from in.
-func MapMap[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1)) map[K1]V1 {
+func MapMap[M ~map[K]V, K, K1 comparable, V, V1 any](in M, fn func(K, V) (K1, V1)) map[K1]V1 {
 	res := make(map[K1]V1, len(in))
 	for k, v := range in {
 		k1, v1 := fn(k, v)
@@ -144,7 +119,7 @@ func MapMap[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1)) map
 }
 
 // MapMapErr apply fn to all kv pairs from in.
-func MapMapErr[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1, error)) (map[K1]V1, error) {
+func MapMapErr[M ~map[K]V, K, K1 comparable, V, V1 any](in M, fn func(K, V) (K1, V1, error)) (map[K1]V1, error) {
 	res := make(map[K1]V1, len(in))
 	for k, v := range in {
 		k1, v1, err := fn(k, v)
@@ -159,14 +134,14 @@ func MapMapErr[K, K1 comparable, V, V1 any](in map[K]V, fn func(K, V) (K1, V1, e
 }
 
 // MapContainsKey returns true if key is exists in the map.
-func MapContainsKey[K comparable, V any](m map[K]V, key K) bool {
+func MapContainsKey[M ~map[K]V, K comparable, V any](m M, key K) bool {
 	_, ok := m[key]
 
 	return ok
 }
 
 // MapContainsKeysAny returns true when at least one key exists in the map.
-func MapContainsKeysAny[K comparable, V any](m map[K]V, keys []K) bool {
+func MapContainsKeysAny[M ~map[K]V, K comparable, V any](m M, keys []K) bool {
 	if len(keys) == 0 {
 		return false
 	}
@@ -185,7 +160,7 @@ func MapContainsKeysAny[K comparable, V any](m map[K]V, keys []K) bool {
 }
 
 // MapContainsKeysAll returns true when at all keys exists in the map.
-func MapContainsKeysAll[K comparable, V any](m map[K]V, keys []K) bool {
+func MapContainsKeysAll[M ~map[K]V, K comparable, V any](m M, keys []K) bool {
 	if len(keys) == 0 {
 		return false
 	}
@@ -204,7 +179,7 @@ func MapContainsKeysAll[K comparable, V any](m map[K]V, keys []K) bool {
 }
 
 // MapApply apply fn to each kv pair
-func MapApply[K comparable, V any](in map[K]V, fn func(k K, v V)) {
+func MapApply[M ~map[K]V, K comparable, V any](in M, fn func(k K, v V)) {
 	for k, v := range in {
 		fn(k, v)
 	}
@@ -212,8 +187,8 @@ func MapApply[K comparable, V any](in map[K]V, fn func(k K, v V)) {
 
 // MapJoin will create a new map containing all key-value pairs from app input
 // maps. If several maps have duplicate keys - the last write wins.
-func MapJoin[K comparable, V any](maps ...map[K]V) map[K]V {
-	res := make(map[K]V)
+func MapJoin[M ~map[K]V, K comparable, V any](maps ...M) M {
+	res := make(M)
 	for i := range maps {
 		for k, v := range maps[i] {
 			res[k] = v
@@ -225,7 +200,7 @@ func MapJoin[K comparable, V any](maps ...map[K]V) map[K]V {
 
 // MapGetDefault return value for given key or default value, if key not
 // present in source map.
-func MapGetDefault[K comparable, V any](in map[K]V, key K, defaultVal V) V {
+func MapGetDefault[M ~map[K]V, K comparable, V any](in M, key K, defaultVal V) V {
 	v, ok := in[key]
 	if !ok {
 		return defaultVal
@@ -236,7 +211,7 @@ func MapGetDefault[K comparable, V any](in map[K]V, key K, defaultVal V) V {
 
 // MapNotNil return source map when it is not nil or create empty
 // instance of this type.
-func MapNotNil[T map[K]V, K comparable, V any](in T) T {
+func MapNotNil[T ~map[K]V, K comparable, V any](in T) T {
 	if in == nil {
 		return make(T, 0)
 	}
@@ -245,7 +220,7 @@ func MapNotNil[T map[K]V, K comparable, V any](in T) T {
 }
 
 // MapDropKeys remove all keys from source map. Map will changed in-place.
-func MapDropKeys[K comparable, V any](in map[K]V, keys ...K) {
+func MapDropKeys[M ~map[K]V, K comparable, V any](in M, keys ...K) {
 	if len(keys) == 0 || len(in) == 0 {
 		return
 	}
