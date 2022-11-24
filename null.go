@@ -4,12 +4,40 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+
+	"github.com/goccy/go-yaml"
 )
 
 // NullVal represent the nullable value for this type.
 type NullVal[T any] struct {
 	Val   T    `json:"v"`
 	Valid bool `json:"ok"`
+}
+
+// UnmarshalYAML implements the interface for unmarshalling yaml.
+func (nv *NullVal[T]) UnmarshalYAML(bb []byte) error {
+	if len(bb) == 0 {
+		nv.Valid = false
+		nv.Val = *new(T)
+		return nil
+	}
+
+	if err := yaml.Unmarshal(bb, &nv.Val); err != nil {
+		return err
+	}
+
+	nv.Valid = true
+
+	return nil
+}
+
+// MarshalYAML implements the interface for marshalling yaml.
+func (nv NullVal[T]) MarshalYAML() ([]byte, error) {
+	if !nv.Valid {
+		return []byte("null"), nil
+	}
+
+	return yaml.Marshal(nv.Val)
 }
 
 // Scan implements the Scanner interface.
