@@ -26,8 +26,8 @@ func ErrIsNotAnyOf(err error, errSlice ...error) bool {
 	return true
 }
 
-// As provide a more handful way to match the error.
-func As[T any](err error) (T, bool) {
+// ErrAs provide a more handful way to match the error.
+func ErrAs[T any](err error) (T, bool) {
 	var target T
 	if errors.As(err, &target) {
 		return target, true

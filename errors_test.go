@@ -108,12 +108,12 @@ func (c customErr) Error() string {
 	return strconv.Itoa(c.reason)
 }
 
-func TestAsTestAs(t *testing.T) {
+func TestAsTestErrAs(t *testing.T) {
 	t.Parallel()
 
 	err := fmt.Errorf("problem: %w", customErr{reason: 13})
 
-	e, ok := just.As[customErr](err)
+	e, ok := just.ErrAs[customErr](err)
 	assert.True(t, ok)
 	assert.Equal(t, customErr{reason: 13}, e)
 }
