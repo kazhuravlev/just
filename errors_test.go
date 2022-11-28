@@ -3,6 +3,7 @@ package just_test
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"testing"
 
 	"github.com/kazhuravlev/just"
@@ -97,4 +98,22 @@ func TestErrIsNotAnyOf(t *testing.T) {
 			assert.Equal(t, row.exp, res)
 		})
 	}
+}
+
+type customErr struct {
+	reason int
+}
+
+func (c customErr) Error() string {
+	return strconv.Itoa(c.reason)
+}
+
+func TestAsTestAs(t *testing.T) {
+	t.Parallel()
+
+	err := fmt.Errorf("problem: %w", customErr{reason: 13})
+
+	e, ok := just.As[customErr](err)
+	assert.True(t, ok)
+	assert.Equal(t, customErr{reason: 13}, e)
 }
