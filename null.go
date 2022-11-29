@@ -111,3 +111,12 @@ func NullNull[T any]() NullVal[T] {
 		Valid: false,
 	}
 }
+
+// NullDefaultFalse returns NullVal for this type with Valid=true only when
+// `val` is not equal to default value of type T.
+func NullDefaultFalse[T comparable](val T) NullVal[T] {
+	return NullVal[T]{
+		Val:   val,
+		Valid: val != *new(T),
+	}
+}

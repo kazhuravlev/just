@@ -107,3 +107,31 @@ func TestNullConstructor(t *testing.T) {
 		assert.False(t, v5.Valid)
 	})
 }
+
+func TestNullDefaultFalse(t *testing.T) {
+	t.Parallel()
+
+	tableWithValidFalse := []bool{
+		just.NullDefaultFalse(0).Valid,
+		just.NullDefaultFalse("").Valid,
+		just.NullDefaultFalse(false).Valid,
+	}
+
+	for _, row := range tableWithValidFalse {
+		t.Run("", func(t *testing.T) {
+			assert.False(t, row)
+		})
+	}
+
+	tableWithValidTrue := []bool{
+		just.NullDefaultFalse(1).Valid,
+		just.NullDefaultFalse("1").Valid,
+		just.NullDefaultFalse(true).Valid,
+	}
+
+	for _, row := range tableWithValidTrue {
+		t.Run("", func(t *testing.T) {
+			assert.True(t, row)
+		})
+	}
+}

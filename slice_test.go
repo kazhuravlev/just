@@ -2,13 +2,13 @@ package just_test
 
 import (
 	"errors"
-	"fmt"
-	"github.com/kazhuravlev/just"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/kazhuravlev/just"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var less = func(a, b int) bool { return a < b }
@@ -660,7 +660,6 @@ func TestSliceRange(t *testing.T) {
 			t.Parallel()
 
 			res := just.SliceRange(row.start, row.stop, row.step)
-			fmt.Println(row.exp, res)
 			assert.Equal(t, row.exp, res)
 		})
 	}
