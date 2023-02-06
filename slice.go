@@ -640,3 +640,17 @@ func SliceReplaceFirst[T any](in []T, fn func(i int, elem T) bool, newElem T) {
 
 	in[e.Idx] = newElem
 }
+
+// SliceReplaceFirstOrAdd will replace the first element in `in` such
+// that fn(index, elem) == true.
+// Will add a `newElem` if the element is not found.
+func SliceReplaceFirstOrAdd[T any](in []T, fn func(i int, elem T) bool, newElem T) []T {
+	e := SliceFindFirst(in, fn)
+	if e.Idx == -1 {
+		return append(in, newElem)
+	}
+
+	in[e.Idx] = newElem
+
+	return in
+}

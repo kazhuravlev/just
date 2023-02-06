@@ -1568,3 +1568,52 @@ func TestSliceReplaceFirst(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceReplaceFirstOrAdd(t *testing.T) {
+	find41 := func(_, v int) bool { return v == 41 }
+	newElem := 42
+
+	table := []struct {
+		in     []int
+		findFn func(int, int) bool
+		exp    []int
+	}{
+		{
+			in:     nil,
+			findFn: find41,
+			exp:    []int{newElem},
+		},
+		{
+			in:     []int{},
+			findFn: find41,
+			exp:    []int{newElem},
+		},
+		{
+			in:     []int{1, 2, 3},
+			findFn: find41,
+			exp:    []int{1, 2, 3, newElem},
+		},
+		{
+			in:     []int{0, 41, 2, 3},
+			findFn: find41,
+			exp:    []int{0, 42, 2, 3},
+		},
+		{
+			in:     []int{0, 41, 41, 41},
+			findFn: find41,
+			exp:    []int{0, 42, 41, 41},
+		},
+		{
+			in:     []int{1, 1, 1, 41},
+			findFn: find41,
+			exp:    []int{1, 1, 1, 42},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.SliceReplaceFirstOrAdd(row.in, row.findFn, newElem)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
