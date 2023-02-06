@@ -628,3 +628,15 @@ func SliceCopy[T any](in []T) []T {
 
 	return res
 }
+
+// SliceReplaceFirst will replace the first element in `in` such
+// that fn(index, elem) == true.
+// Will do nothing if the element is not found.
+func SliceReplaceFirst[T any](in []T, fn func(i int, elem T) bool, newElem T) {
+	e := SliceFindFirst(in, fn)
+	if e.Idx == -1 {
+		return
+	}
+
+	in[e.Idx] = newElem
+}
