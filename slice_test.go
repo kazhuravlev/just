@@ -1265,6 +1265,98 @@ func TestSliceMap(t *testing.T) {
 	}
 }
 
+func TestSliceFlatMap(t *testing.T) {
+	t.Parallel()
+
+	fn := func(v int) []int {
+		return []int{v, 10 * v, 100 * v}
+	}
+
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int) []int
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   fn,
+			exp:  nil,
+		},
+		{
+			name: "case1",
+			in:   []int{1, 2, 3},
+			fn:   fn,
+			exp:  []int{1, 10, 100, 2, 20, 200, 3, 30, 300},
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			fn:   func(v int) []int { return nil },
+			exp:  nil,
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceFlatMap(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
+func TestSliceFlatMap2(t *testing.T) {
+	t.Parallel()
+
+	fn := func(i int, v int) []int {
+		if i == 0 {
+			return nil
+		}
+
+		return []int{v, 10 * v, 100 * v}
+	}
+
+	table := []struct {
+		name string
+		in   []int
+		fn   func(int, int) []int
+		exp  []int
+	}{
+		{
+			name: "empty",
+			in:   nil,
+			fn:   fn,
+			exp:  nil,
+		},
+		{
+			name: "case1",
+			in:   []int{1, 2, 3},
+			fn:   fn,
+			exp:  []int{2, 20, 200, 3, 30, 300},
+		},
+		{
+			name: "case2",
+			in:   []int{1, 2, 3},
+			fn:   func(i int, v int) []int { return []int{i, v} },
+			exp:  []int{0, 1, 1, 2, 2, 3},
+		},
+	}
+
+	for _, row := range table {
+		row := row
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := just.SliceFlatMap2(row.in, row.fn)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}
+
 func TestSliceApply(t *testing.T) {
 	t.Parallel()
 

@@ -30,6 +30,36 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	return res
 }
 
+// SliceFlatMap apply `fn` to each element of `in` and join all output slices.
+func SliceFlatMap[T, V any](in []T, fn func(val T) []V) []V {
+	if len(in) == 0 {
+		return nil
+	}
+
+	var res []V
+	for i := range in {
+		slice := fn(in[i])
+		res = append(res, slice...)
+	}
+
+	return res
+}
+
+// SliceFlatMap2 do the same as SliceFlatMap but receive index of element.
+func SliceFlatMap2[T, V any](in []T, fn func(i int, val T) []V) []V {
+	if len(in) == 0 {
+		return nil
+	}
+
+	var res []V
+	for i := range in {
+		slice := fn(i, in[i])
+		res = append(res, slice...)
+	}
+
+	return res
+}
+
 // SliceApply handle all elements from `in` by function `fn`. Function apply
 // sequentially.
 func SliceApply[T any](in []T, fn func(int, T)) {
