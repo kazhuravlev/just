@@ -6,9 +6,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kazhuravlev/just)](https://goreportcard.com/report/github.com/kazhuravlev/just)
 [![CodeCov](https://codecov.io/gh/kazhuravlev/just/branch/master/graph/badge.svg?token=tNKcOjlxLo)](https://codecov.io/gh/kazhuravlev/just)
 
-This project is contains functions that help to do noizy things in every
-project.
+This project contains features that help make the noisy stuff in every project.
 
 - Filter slices, maps.
-- Apply functions to collections.
-- Null[any] for optional fields in api an sql.DB requests.
+- Applying functions to collections.
+- Null[any] for optional fields in API and sql.DB queries.
