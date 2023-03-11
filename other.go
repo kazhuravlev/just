@@ -1,6 +1,7 @@
 package just
 
-// Bool returns true if element not equal to default value for this type.
+// Bool returns true if the element is not equal to the default value
+// for this type.
 func Bool[T builtin](v T) bool {
 	switch x := any(v).(type) {
 	case bool:
@@ -38,7 +39,7 @@ func Bool[T builtin](v T) bool {
 	return false
 }
 
-// Must will panic on error after calling typical function.
+// Must will panic on an error after calling typical function.
 func Must[T any](val T, err error) T {
 	if err != nil {
 		panic(err)

@@ -9,7 +9,7 @@ type Pool[T any] struct {
 	reset func(T)
 }
 
-// NewPool return a new pool with concrete type and reset fn.
+// NewPool returns a new pool with concrete type and resets fn.
 func NewPool[T any](constructor func() T, reset func(T)) *Pool[T] {
 	if reset == nil {
 		reset = func(T) {}
@@ -23,12 +23,12 @@ func NewPool[T any](constructor func() T, reset func(T)) *Pool[T] {
 	}
 }
 
-// Get return another object from pool.
+// Get return another object from the pool.
 func (p *Pool[T]) Get() T {
 	return p.pool.Get().(T)
 }
 
-// Put will reset object and put object to pool.
+// Put will reset the object and put this object to the pool.
 func (p *Pool[T]) Put(obj T) {
 	p.reset(obj)
 	p.pool.Put(obj)

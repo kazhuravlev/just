@@ -20,7 +20,7 @@ func Max[T number](in ...T) T {
 	return res
 }
 
-// MaxOr returns max element from `in` or defaultVal when `in` is empty
+// MaxOr returns the max element from `in` or defaultVal when `in` is empty.
 func MaxOr[T number](defaultVal T, in ...T) T {
 	if len(in) == 0 {
 		return defaultVal
@@ -29,8 +29,8 @@ func MaxOr[T number](defaultVal T, in ...T) T {
 	return Max(in...)
 }
 
-// MaxDefault returns max element from `in` or default value for specified
-// type when `in` is empty.
+// MaxDefault returns the max element from `in` or the default value for
+// a specified type when `in` is empty.
 func MaxDefault[T number](in ...T) T {
 	return MaxOr(0, in...)
 }
@@ -55,7 +55,7 @@ func Min[T number](in ...T) T {
 	return res
 }
 
-// MinOr returns min element from `in` or defaultVal when `in` is empty
+// MinOr returns the min element from `in` or defaultVal when `in` is empty.
 func MinOr[T number](defaultVal T, in ...T) T {
 	if len(in) == 0 {
 		return defaultVal
@@ -64,8 +64,8 @@ func MinOr[T number](defaultVal T, in ...T) T {
 	return Min(in...)
 }
 
-// MinDefault returns min element from `in` or default value for specified
-// type when `in` is empty.
+// MinDefault returns the min element from `in` or the default value for
+// a specified type when `in` is empty.
 func MinDefault[T number](in ...T) T {
 	return MinOr(0, in...)
 }
@@ -80,7 +80,7 @@ func Sum[T number](in ...T) T {
 	return acc
 }
 
-// Abs returns abs value of v.
+// Abs returns the abs value of v.
 func Abs[T number](v T) T {
 	if v < 0 {
 		return -v

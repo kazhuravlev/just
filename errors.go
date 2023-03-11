@@ -2,7 +2,7 @@ package just
 
 import "errors"
 
-// ErrIsAnyOf return true when at least one expression
+// ErrIsAnyOf returns true when at least one expression
 // `errors.Is(err, errSlice[N])` return true.
 func ErrIsAnyOf(err error, errSlice ...error) bool {
 	for i := range errSlice {
@@ -14,7 +14,7 @@ func ErrIsAnyOf(err error, errSlice ...error) bool {
 	return false
 }
 
-// ErrIsNotAnyOf return true when all errors from errSlice is not
+// ErrIsNotAnyOf returns true when all errors from errSlice are not
 // `errors.Is(err, errSlice[N])`.
 func ErrIsNotAnyOf(err error, errSlice ...error) bool {
 	for i := range errSlice {

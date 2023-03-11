@@ -8,7 +8,7 @@ import (
 	"github.com/goccy/go-yaml"
 )
 
-// NullVal represent the nullable value for this type.
+// NullVal represents the nullable value for this type.
 type NullVal[T any] struct {
 	Val   T    `json:"v"`
 	Valid bool `json:"ok"`
@@ -31,7 +31,7 @@ func (nv *NullVal[T]) UnmarshalYAML(bb []byte) error {
 	return nil
 }
 
-// MarshalYAML implements the interface for marshalling yaml.
+// MarshalYAML implements the interface for marshaling yaml.
 func (nv NullVal[T]) MarshalYAML() ([]byte, error) {
 	if !nv.Valid {
 		return []byte("null"), nil

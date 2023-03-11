@@ -1,7 +1,8 @@
 package just
 
-// ChanAdapt returns a channel, which will contains adapted messages from
-// source channel. Result channel will closed after source channel is closed.
+// ChanAdapt returns a channel, which will contain adapted messages from
+// the source channel. The resulting channel will be closed after the source
+// channel is closed.
 func ChanAdapt[T, D any](in <-chan T, fn func(T) D) <-chan D {
 	ch := make(chan D)
 	go func() {
@@ -22,7 +23,8 @@ func ChanPut[T any](ch chan T, elems []T) {
 	}
 }
 
-// ChanReadN will read N messages from channel and return the result slice.
+// ChanReadN will read N messages from the channel and return the resulting
+// slice.
 func ChanReadN[T any](ch chan T, n int) []T {
 	res := make([]T, n)
 	for i := 0; i < n; i++ {

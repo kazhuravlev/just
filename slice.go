@@ -4,7 +4,7 @@ import (
 	"sort"
 )
 
-// SliceUniq returns only unique values from `in`.
+// SliceUniq returns unique values from `in`.
 func SliceUniq[T comparable](in []T) []T {
 	index := Slice2Map(in)
 
@@ -30,7 +30,7 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	return res
 }
 
-// SliceFlatMap apply `fn` to each element of `in` and join all output slices.
+// SliceFlatMap applies `fn` to each element of `in` and join all output slices.
 func SliceFlatMap[T, V any](in []T, fn func(val T) []V) []V {
 	if len(in) == 0 {
 		return nil
@@ -45,7 +45,8 @@ func SliceFlatMap[T, V any](in []T, fn func(val T) []V) []V {
 	return res
 }
 
-// SliceFlatMap2 do the same as SliceFlatMap but receive index of element.
+// SliceFlatMap2 does the same as SliceFlatMap but receives the index
+// of the element.
 func SliceFlatMap2[T, V any](in []T, fn func(i int, val T) []V) []V {
 	if len(in) == 0 {
 		return nil
@@ -60,8 +61,8 @@ func SliceFlatMap2[T, V any](in []T, fn func(i int, val T) []V) []V {
 	return res
 }
 
-// SliceApply handle all elements from `in` by function `fn`. Function apply
-// sequentially.
+// SliceApply handles all elements from `in` by function `fn`. Function
+// applies sequentially.
 func SliceApply[T any](in []T, fn func(int, T)) {
 	if len(in) == 0 {
 		return
@@ -72,8 +73,8 @@ func SliceApply[T any](in []T, fn func(int, T)) {
 	}
 }
 
-// SliceMapErr do the same thing as SliceMap, but return error when error
-// occurs in fn.
+// SliceMapErr does the same thing as SliceMap but returns an error when
+// an error occurs in fn.
 func SliceMapErr[T any, V any](in []T, fn func(T) (V, error)) ([]V, error) {
 	if len(in) == 0 {
 		return nil, nil
@@ -91,7 +92,7 @@ func SliceMapErr[T any, V any](in []T, fn func(T) (V, error)) ([]V, error) {
 	return res, nil
 }
 
-// SliceFilter returns slice of values from `in` where `fn(elem) == true`.
+// SliceFilter returns a slice of values from `in` where `fn(elem) == true`.
 func SliceFilter[T any](in []T, fn func(T) bool) []T {
 	if len(in) == 0 {
 		return nil
@@ -185,8 +186,8 @@ func Slice2Map[T comparable](in []T) map[T]struct{} {
 	return res
 }
 
-// SliceDifference return the difference between `oldSlice` and `newSlice`.
-// Returns only elements which presented in `newSlice` but not presented
+// SliceDifference returns the difference between `oldSlice` and `newSlice`.
+// Returns only elements presented in `newSlice` but not presented
 // in `oldSlice`.
 // Example: [1,2,3], [3,4,5,5,5] => [4,5,5,5]
 func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
