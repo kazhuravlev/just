@@ -11,3 +11,9 @@ This project contains features that help make the noisy stuff in every project.
 - Filter slices, maps.
 - Applying functions to collections.
 - Null[any] for optional fields in API and sql.DB queries.
+
+## Examples
+
+This library contains a bunch of functions. Please
+see [pkg.go.dev](https://pkg.go.dev/github.com/kazhuravlev/just#pkg-examples)
+for examples.

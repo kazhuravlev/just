@@ -2,7 +2,6 @@ package just_test
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -10,13 +9,6 @@ import (
 	"regexp"
 	"testing"
 )
-
-func ExampleMust() {
-	val := just.Must(io.ReadAll(bytes.NewBufferString("this is body!")))
-	fmt.Println(string(val))
-	// Output:
-	// this is body!
-}
 
 func TestBool(t *testing.T) {
 	t.Parallel()
