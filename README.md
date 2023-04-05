@@ -5,6 +5,7 @@
 [![Build Status](https://github.com/kazhuravlev/just/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/kazhuravlev/just/actions/workflows/tests.yml?query=branch%3Amaster)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kazhuravlev/just)](https://goreportcard.com/report/github.com/kazhuravlev/just)
 [![CodeCov](https://codecov.io/gh/kazhuravlev/just/branch/master/graph/badge.svg?token=tNKcOjlxLo)](https://codecov.io/gh/kazhuravlev/just)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go#utilities)
 
 This project contains features that help make the noisy stuff in every project.
 
