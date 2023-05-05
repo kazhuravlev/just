@@ -71,3 +71,21 @@ func RunAfter(ctx context.Context, ticker <-chan time.Time, runNow bool, fn func
 		}
 	}
 }
+
+// If return val1 when condition is true; val2 in other case.
+//
+// Usable to simplify constructions like:
+//
+//	var username string
+//	if request.Username != "" {
+//	    username = request.Username
+//	} else {
+//	    username = "__unknown__"
+//	}
+func If[T any](condition bool, val1, val2 T) T {
+	if condition {
+		return val1
+	}
+
+	return val2
+}
