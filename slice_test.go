@@ -121,12 +121,12 @@ func TestSliceZip(t *testing.T) {
 		{
 			name: "empty",
 			in:   nil,
-			exp:  nil,
+			exp:  [][]int{},
 		},
 		{
 			name: "empty_len0",
 			in:   [][]int{},
-			exp:  nil,
+			exp:  [][]int{},
 		},
 		{
 			name: "one_slice_in_args",
@@ -168,7 +168,7 @@ func TestSliceZip(t *testing.T) {
 				{20, 21},
 				{},
 			},
-			exp: nil,
+			exp: [][]int{},
 		},
 	}
 
@@ -196,7 +196,7 @@ func TestSliceChunk(t *testing.T) {
 			name: "empty",
 			in:   nil,
 			fn:   nil,
-			exp:  nil,
+			exp:  [][]int{},
 		},
 		{
 			name: "split_fn_always_true",
@@ -261,7 +261,7 @@ func TestSliceChunkEvery(t *testing.T) {
 			name:  "empty",
 			in:    nil,
 			every: 1,
-			exp:   nil,
+			exp:   [][]int{},
 		},
 		{
 			name:  "split_every_1",
@@ -608,7 +608,7 @@ func TestSliceRange(t *testing.T) {
 			start: 0,
 			stop:  0,
 			step:  0,
-			exp:   nil,
+			exp:   []int{},
 		},
 		{
 			name:  "from_0_to_5_by_2",
@@ -622,14 +622,14 @@ func TestSliceRange(t *testing.T) {
 			start: 0,
 			stop:  5,
 			step:  -2,
-			exp:   nil,
+			exp:   []int{},
 		},
 		{
 			name:  "from_5_to_0_by_2",
 			start: 5,
 			stop:  0,
 			step:  2,
-			exp:   nil,
+			exp:   []int{},
 		},
 		{
 			name:  "from_minus_5_to_minus_1_by_2",
@@ -650,7 +650,7 @@ func TestSliceRange(t *testing.T) {
 			start: 0,
 			stop:  10,
 			step:  0,
-			exp:   nil,
+			exp:   []int{},
 		},
 	}
 
@@ -864,7 +864,7 @@ func TestSliceChain(t *testing.T) {
 	t.Parallel()
 
 	res1 := just.SliceChain[int]()
-	assert.Equal(t, []int(nil), res1)
+	assert.Equal(t, []int{}, res1)
 
 	res := just.SliceChain([]int{1, 2, 3}, []int{4, 5, 6}, []int{7, 8, 9})
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9}, res)
@@ -945,7 +945,7 @@ func TestSliceWithout(t *testing.T) {
 			name: "empty",
 			in:   nil,
 			elem: 0,
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "exclude_two",
@@ -1238,7 +1238,7 @@ func TestSliceMap(t *testing.T) {
 			name: "empty",
 			in:   nil,
 			fn:   strconv.Itoa,
-			exp:  nil,
+			exp:  []string{},
 		},
 		{
 			name: "case1",
@@ -1282,7 +1282,7 @@ func TestSliceFlatMap(t *testing.T) {
 			name: "empty",
 			in:   nil,
 			fn:   fn,
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "case1",
@@ -1294,7 +1294,7 @@ func TestSliceFlatMap(t *testing.T) {
 			name: "case2",
 			in:   []int{1, 2, 3},
 			fn:   func(v int) []int { return nil },
-			exp:  nil,
+			exp:  []int{},
 		},
 	}
 
@@ -1330,7 +1330,7 @@ func TestSliceFlatMap2(t *testing.T) {
 			name: "empty",
 			in:   nil,
 			fn:   fn,
-			exp:  nil,
+			exp:  []int{},
 		},
 		{
 			name: "case1",
@@ -1389,7 +1389,7 @@ func TestSliceMapErr(t *testing.T) {
 			fn: func(v int) (string, error) {
 				return "", nil
 			},
-			exp: nil,
+			exp: []string{},
 			err: false,
 		},
 		{
@@ -1443,7 +1443,7 @@ func TestSliceGroupBy(t *testing.T) {
 			fn: func(v int) string {
 				return strconv.Itoa(v % 2)
 			},
-			exp: nil,
+			exp: map[string][]int{},
 		},
 		{
 			name: "group_odd_even",

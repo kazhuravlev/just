@@ -19,7 +19,7 @@ func SliceUniq[T comparable](in []T) []T {
 // SliceMap returns the slice where each element of `in` was handled by `fn`.
 func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	if len(in) == 0 {
-		return nil
+		return make([]V, 0)
 	}
 
 	res := make([]V, len(in))
@@ -33,10 +33,10 @@ func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 // SliceFlatMap applies `fn` to each element of `in` and join all output slices.
 func SliceFlatMap[T, V any](in []T, fn func(val T) []V) []V {
 	if len(in) == 0 {
-		return nil
+		return make([]V, 0)
 	}
 
-	var res []V
+	res := make([]V, 0, len(in))
 	for i := range in {
 		slice := fn(in[i])
 		res = append(res, slice...)
@@ -49,7 +49,7 @@ func SliceFlatMap[T, V any](in []T, fn func(val T) []V) []V {
 // of the element.
 func SliceFlatMap2[T, V any](in []T, fn func(i int, val T) []V) []V {
 	if len(in) == 0 {
-		return nil
+		return make([]V, 0)
 	}
 
 	var res []V
@@ -77,7 +77,7 @@ func SliceApply[T any](in []T, fn func(int, T)) {
 // an error occurs in fn.
 func SliceMapErr[T any, V any](in []T, fn func(T) (V, error)) ([]V, error) {
 	if len(in) == 0 {
-		return nil, nil
+		return make([]V, 0), nil
 	}
 
 	res := make([]V, len(in))
@@ -95,7 +95,7 @@ func SliceMapErr[T any, V any](in []T, fn func(T) (V, error)) ([]V, error) {
 // SliceFilter returns a slice of values from `in` where `fn(elem) == true`.
 func SliceFilter[T any](in []T, fn func(T) bool) []T {
 	if len(in) == 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	res := make([]T, 0, len(in))
@@ -113,7 +113,7 @@ func SliceFilter[T any](in []T, fn func(T) bool) []T {
 // SliceReverse reverse the slice.
 func SliceReverse[T any](in []T) []T {
 	if len(in) == 0 {
-		return []T{}
+		return make([]T, 0)
 	}
 
 	res := make([]T, len(in))
@@ -196,7 +196,7 @@ func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
 	}
 
 	if len(newSlice) == 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	index := Slice2Map(oldSlice)
@@ -216,11 +216,11 @@ func SliceDifference[T comparable](oldSlice, newSlice []T) []T {
 // Example: [1,2,3], [2,4,3,3,3] => [2, 3]
 func SliceIntersection[T comparable](oldSlice, newSlice []T) []T {
 	if len(oldSlice) == 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	if len(newSlice) == 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	index := Slice2Map(oldSlice)
@@ -255,7 +255,7 @@ func SliceWithout[T any](in []T, fn func(T) bool) []T {
 // use smaller one.
 func SliceZip[T any](in ...[]T) [][]T {
 	if len(in) == 0 {
-		return nil
+		return make([][]T, 0)
 	}
 
 	maxLen := len(in[0])
@@ -266,7 +266,7 @@ func SliceZip[T any](in ...[]T) [][]T {
 	}
 
 	if maxLen == 0 {
-		return nil
+		return make([][]T, 0)
 	}
 
 	res := make([][]T, maxLen)
@@ -306,7 +306,7 @@ func SliceNotNil[T any](in []T) []T {
 // SliceChunk split `in` into chunks by fn(index, elem) == true.
 func SliceChunk[T any](in []T, fn func(i int, elem T) bool) [][]T {
 	if len(in) == 0 {
-		return nil
+		return make([][]T, 0)
 	}
 
 	res := make([][]T, 0, len(in))
@@ -466,20 +466,20 @@ func SliceFindAllIndexes[T any](in []T, fn func(i int, elem T) bool) []int {
 // to stop (exclusive) by step.
 func SliceRange[T number](start, stop, step T) []T {
 	if start == stop {
-		return nil
+		return make([]T, 0)
 	}
 
 	if step == 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	isIncr := start < stop
 	if isIncr && step < 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	if !isIncr && step > 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	res := make([]T, 0, int(Abs((start-stop)/step)))
@@ -528,7 +528,7 @@ func SliceEqualUnordered[T comparable](in1, in2 []T) bool {
 // append(append(in[0], in[1]...), in[2]...).
 func SliceChain[T any](in ...[]T) []T {
 	if len(in) == 0 {
-		return nil
+		return make([]T, 0)
 	}
 
 	var l int
@@ -567,7 +567,7 @@ func SliceSortCopy[T any](in []T, less func(a, b T) bool) []T {
 // SliceGroupBy will group all
 func SliceGroupBy[K comparable, V any](in []V, fn func(V) K) map[K][]V {
 	if len(in) == 0 {
-		return nil
+		return make(map[K][]V, 0)
 	}
 
 	res := make(map[K][]V, len(in))
