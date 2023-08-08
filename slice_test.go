@@ -1709,3 +1709,39 @@ func TestSliceReplaceFirstOrAdd(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceLastDefault(t *testing.T) {
+	table := []struct {
+		in         []int
+		defaultVal int
+		exp        int
+	}{
+		{
+			in:         nil,
+			defaultVal: -1,
+			exp:        -1,
+		},
+		{
+			in:         []int{},
+			defaultVal: -1,
+			exp:        -1,
+		},
+		{
+			in:         []int{15},
+			defaultVal: -1,
+			exp:        15,
+		},
+		{
+			in:         []int{15, 16},
+			defaultVal: -1,
+			exp:        16,
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.SliceLastDefault(row.in, row.defaultVal)
+			assert.Equal(t, row.exp, res)
+		})
+	}
+}

@@ -685,3 +685,12 @@ func SliceReplaceFirstOrAdd[T any](in []T, fn func(i int, elem T) bool, newElem 
 
 	return in
 }
+
+// SliceLastDefault return a last elem from slice or default value in case of zero slice.
+func SliceLastDefault[T any](in []T, defaultVal T) T {
+	if len(in) == 0 {
+		return defaultVal
+	}
+
+	return in[len(in)-1]
+}
