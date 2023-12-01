@@ -16,6 +16,24 @@ func SliceUniq[T comparable](in []T) []T {
 	return res
 }
 
+// SliceUniqStable returns unique values from `in`. Keep original ordering.
+func SliceUniqStable[T comparable](in []T) []T {
+	index := make(map[T]struct{}, len(in))
+
+	res := make([]T, 0, len(in))
+	for i := range in {
+		if MapContainsKey(index, in[i]) {
+			continue
+		}
+
+		index[in[i]] = struct{}{}
+
+		res = append(res, in[i])
+	}
+
+	return res
+}
+
 // SliceMap returns the slice where each element of `in` was handled by `fn`.
 func SliceMap[T any, V any](in []T, fn func(T) V) []V {
 	if len(in) == 0 {
