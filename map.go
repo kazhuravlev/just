@@ -229,3 +229,15 @@ func MapDropKeys[M ~map[K]V, K comparable, V any](in M, keys ...K) {
 		delete(in, keys[i])
 	}
 }
+
+// MapPopKeyDefault will return value for given key and delete this key from source map.
+// In case of key do not presented in map - returns default value.
+func MapPopKeyDefault[M ~map[K]V, K comparable, V any](in M, key K, def V) V {
+	val, ok := in[key]
+	if ok {
+		delete(in, key)
+		return val
+	}
+
+	return def
+}
