@@ -697,3 +697,26 @@ func TestMapDropKeys(t *testing.T) {
 		})
 	}
 }
+
+func TestMapPopKeyDefault(t *testing.T) {
+	t.Parallel()
+
+	f := func(in map[int]int, k, def, exp int) {
+		t.Helper()
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+
+			res := just.MapPopKeyDefault(in, k, def)
+			require.Equal(t, exp, res)
+			require.False(t, just.MapContainsKey(in, k))
+		})
+	}
+
+	type m map[int]int
+	const ne = -1
+
+	f(nil, 1, ne, ne)
+	f(m{}, 1, ne, ne)
+	f(m{1: 11}, 1, ne, 11)
+	f(m{2: 22}, 1, ne, ne)
+}
