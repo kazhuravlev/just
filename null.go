@@ -9,6 +9,7 @@ import (
 )
 
 // NullVal represents the nullable value for this type.
+// Deprecated: Use github.com/kazhuravlev/optional.
 type NullVal[T any] struct {
 	Val   T    `json:"v"`
 	Valid bool `json:"ok"`
