@@ -712,3 +712,12 @@ func SliceLastDefault[T any](in []T, defaultVal T) T {
 
 	return in[len(in)-1]
 }
+
+// Slice2Iter create an iterator from slice. Check this docs https://go.dev/ref/spec#For_range.
+func Slice2Iter[T any](in []T) func(func(int, T) bool) {
+	return func(yield func(int, T) bool) {
+		for i := range in {
+			yield(i, in[i])
+		}
+	}
+}
