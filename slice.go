@@ -717,7 +717,9 @@ func SliceLastDefault[T any](in []T, defaultVal T) T {
 func Slice2Iter[T any](in []T) func(func(int, T) bool) {
 	return func(yield func(int, T) bool) {
 		for i := range in {
-			yield(i, in[i])
+			if !yield(i, in[i]) {
+				return
+			}
 		}
 	}
 }
