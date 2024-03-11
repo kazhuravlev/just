@@ -1,6 +1,8 @@
 package just
 
-import "unicode/utf8"
+import (
+	"unicode/utf8"
+)
 
 // StrCharCount returns rune count in string.
 func StrCharCount(s string) int {
@@ -23,4 +25,24 @@ func StrSplitByChars(s string) []rune {
 	}
 
 	return chars
+}
+
+// StrGetFirst return string contains first N valid chars.
+func StrGetFirst(s string, n int) string {
+	if n <= 0 {
+		return ""
+	}
+
+	var idx int
+	for n > 0 {
+		_, size := utf8.DecodeRune([]byte(s)[idx:])
+		if size == 0 {
+			break
+		}
+
+		idx += size
+		n--
+	}
+
+	return s[:idx]
 }
