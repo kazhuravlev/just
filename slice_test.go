@@ -1801,3 +1801,18 @@ func TestSliceLastDefault(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceShuffleCopy(t *testing.T) {
+	input := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	var res []int
+	for range just.SliceRange(0, 5, 1) {
+		t.Run("", func(t *testing.T) {
+			res2 := just.SliceShuffleCopy(input)
+			assert.NotEqual(t, input, res2)
+			assert.NotEqual(t, res2, res)
+
+			res = res2
+		})
+	}
+}
