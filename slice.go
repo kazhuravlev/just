@@ -1,6 +1,7 @@
 package just
 
 import (
+	"math/rand"
 	"sort"
 )
 
@@ -722,4 +723,22 @@ func Slice2Iter[T any](in []T) func(func(int, T) bool) {
 			}
 		}
 	}
+}
+
+// SliceShuffle will shuffle the slice in-place.
+func SliceShuffle[T any](in []T) {
+	for i := range in {
+		j := rand.Intn(i + 1)
+		in[i], in[j] = in[j], in[i]
+	}
+}
+
+// SliceShuffleCopy will make a copy and shuffle slice.
+func SliceShuffleCopy[T any](in []T) []T {
+	res := make([]T, len(in))
+	copy(res, in)
+
+	SliceShuffle(res)
+
+	return res
 }
