@@ -1816,3 +1816,49 @@ func TestSliceShuffleCopy(t *testing.T) {
 		})
 	}
 }
+
+func TestSliceLastN(t *testing.T) {
+	table := []struct {
+		in  []int
+		n   int
+		exp []int
+	}{
+		{
+			in:  nil,
+			n:   10,
+			exp: []int{},
+		},
+		{
+			in:  nil,
+			n:   0,
+			exp: []int{},
+		},
+		{
+			in:  []int{10},
+			n:   0,
+			exp: []int{},
+		},
+		{
+			in:  []int{10},
+			n:   1,
+			exp: []int{10},
+		},
+		{
+			in:  []int{10},
+			n:   6,
+			exp: []int{10},
+		},
+		{
+			in:  []int{10, 20, 30, 40, 50},
+			n:   2,
+			exp: []int{40, 50},
+		},
+	}
+
+	for _, row := range table {
+		t.Run("", func(t *testing.T) {
+			res := just.SliceLastN(row.in, row.n)
+			require.Equal(t, row.exp, res)
+		})
+	}
+}
