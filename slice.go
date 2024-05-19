@@ -742,3 +742,31 @@ func SliceShuffleCopy[T any](in []T) []T {
 
 	return res
 }
+
+// SliceLastN return up to last n elements from input slice in original order.
+func SliceLastN[T any](in []T, n int) []T {
+	if n < 0 {
+		panic("n should be greater than 0")
+	}
+
+	inLen := len(in)
+
+	if inLen == 0 || n == 0 {
+		return make([]T, 0)
+	}
+
+	if inLen == n {
+		res := make([]T, n)
+		copy(res, in)
+
+		return res
+	}
+
+	n = Min(inLen, n)
+	res := make([]T, n)
+	for i := n - 1; i >= 0; i-- {
+		res[i] = in[inLen-n+i]
+	}
+
+	return res
+}
