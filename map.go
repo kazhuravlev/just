@@ -241,3 +241,9 @@ func MapPopKeyDefault[M ~map[K]V, K comparable, V any](in M, key K, def V) V {
 
 	return def
 }
+
+// MapSetVal update key with value for given map and return updated map.
+func MapSetVal[M ~map[K]V, K comparable, V any](in M, key K, val V) M {
+	in[key] = val
+	return in
+}

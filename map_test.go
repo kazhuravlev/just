@@ -720,3 +720,26 @@ func TestMapPopKeyDefault(t *testing.T) {
 	f(m{1: 11}, 1, ne, 11)
 	f(m{2: 22}, 1, ne, ne)
 }
+
+func TestMapSetVal(t *testing.T) {
+	t.Parallel()
+
+	type m map[int]int
+
+	f := func(in m, k, v int, exp m) {
+		t.Helper()
+
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+
+			require.Equal(t, exp, just.MapSetVal(in, k, v))
+		})
+	}
+
+	require.Panics(t, func() {
+		just.MapSetVal((m)(nil), 1, 1)
+	})
+	f(m{}, 1, 1, m{1: 1})
+	f(m{1: 1}, 1, 111, m{1: 111})
+	f(m{1: 1}, 2, 2, m{1: 1, 2: 2})
+}
