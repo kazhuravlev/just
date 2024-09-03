@@ -13,6 +13,22 @@ This project contains features that help make the noisy stuff in every project.
 - Applying functions to collections.
 - Null[any] for optional fields in API and sql.DB queries.
 
+## Most helpful functions
+
+- [`SliceIter`](https://pkg.go.dev/github.com/kazhuravlev/just#SliceIter) allows you to iterate over slice with
+  special `IterContext` that provide some methods like `IsFirst`, `IsLast`
+- [`SliceMap`](https://pkg.go.dev/github.com/kazhuravlev/just#SliceMap) and
+  [`SliceMapErr`](https://pkg.go.dev/github.com/kazhuravlev/just#SliceMapErr) allow you to map a slice to
+  another one. Useful for adapters.
+- [`NewPool`](https://pkg.go.dev/github.com/kazhuravlev/just#NewPool) `sync.Pool` with generics
+- [`ChanAdapt`](https://pkg.go.dev/github.com/kazhuravlev/just#ChanAdapt) allows to create an adapted version of channel
+- [`ContextWithTimeout`](https://pkg.go.dev/github.com/kazhuravlev/just#ContextWithTimeout) runs a function with context
+  and timeout
+- [`ErrAs`](https://pkg.go.dev/github.com/kazhuravlev/just#ErrAs) helps to handle an errors
+- [`SliceChunk`](https://pkg.go.dev/github.com/kazhuravlev/just#SliceChunk) iterates over chunks
+- [`SliceChain`](https://pkg.go.dev/github.com/kazhuravlev/just#SliceChain) joins slices to one
+- [`StrSplitByChars`](https://pkg.go.dev/github.com/kazhuravlev/just#StrSplitByChars) splits the string by symbols
+
 ## Examples
 
 This library contains a bunch of functions. Please
