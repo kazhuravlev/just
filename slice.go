@@ -725,6 +725,53 @@ func Slice2Iter[T any](in []T) func(func(int, T) bool) {
 	}
 }
 
+type IterContext interface {
+	// Idx returns an element index
+	Idx() int
+	RevIdx() int
+	IsFirst() bool
+	IsLast() bool
+}
+
+type iterContext struct {
+	idx   int
+	inLen int
+}
+
+func (i iterContext) Idx() int {
+	return i.idx
+}
+
+func (i iterContext) RevIdx() int {
+	return i.inLen - i.idx - 1
+}
+
+func (i iterContext) IsFirst() bool {
+	return i.idx == 0
+}
+
+func (i iterContext) IsLast() bool {
+	return i.idx == i.inLen-1
+}
+
+var _ IterContext = (*iterContext)(nil)
+
+// SliceIter create an iterator from slice. The first argument will contain a useful context struct.
+func SliceIter[T any](in []T) func(func(IterContext, T) bool) {
+	return func(yield func(loop IterContext, elem T) bool) {
+		inLen := len(in)
+		for i := range in {
+			ctx := iterContext{
+				idx:   i,
+				inLen: inLen,
+			}
+			if !yield(ctx, in[i]) {
+				return
+			}
+		}
+	}
+}
+
 // SliceShuffle will shuffle the slice in-place.
 func SliceShuffle[T any](in []T) {
 	for i := range in {
