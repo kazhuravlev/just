@@ -2000,3 +2000,32 @@ func TestSliceFindLast(t *testing.T) {
 		assert.Equal(t, 30, result.Val)
 	})
 }
+
+func TestSliceWithoutElem(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{}, 5)
+		assert.Equal(t, []int{}, result)
+	})
+
+	t.Run("removes_single_occurrence", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{1, 2, 3, 4, 5}, 3)
+		assert.Equal(t, []int{1, 2, 4, 5}, result)
+	})
+
+	t.Run("removes_multiple_occurrences", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{1, 2, 3, 2, 4, 2, 5}, 2)
+		assert.Equal(t, []int{1, 3, 4, 5}, result)
+	})
+
+	t.Run("element_not_in_slice", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{1, 2, 3, 4, 5}, 6)
+		assert.Equal(t, []int{1, 2, 3, 4, 5}, result)
+	})
+
+	t.Run("removes_all_elements", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{2, 2, 2, 2}, 2)
+		assert.Equal(t, []int{}, result)
+	})
+}
