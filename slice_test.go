@@ -1863,7 +1863,6 @@ func TestSliceLastN(t *testing.T) {
 	}
 }
 
-
 func TestSliceAny(t *testing.T) {
 	t.Parallel()
 
@@ -2009,9 +2008,15 @@ func TestSliceShuffle(t *testing.T) {
 	t.Parallel()
 
 	t.Run("empty_slice", func(t *testing.T) {
-		var slice []int
+		slice := []int{}
 		just.SliceShuffle(slice)
 		assert.Equal(t, []int{}, slice)
+	})
+
+	t.Run("empty_slice_returns_orig_slice", func(t *testing.T) {
+		var slice []int
+		just.SliceShuffle(slice)
+		assert.Nil(t, slice)
 	})
 
 	t.Run("single_element", func(t *testing.T) {
