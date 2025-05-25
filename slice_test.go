@@ -1920,3 +1920,32 @@ func TestSliceAny(t *testing.T) {
 	})
 }
 
+func TestSliceFilter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceFilter([]int{}, func(n int) bool { return n > 0 })
+		assert.Equal(t, []int{}, result)
+	})
+
+	t.Run("filters_positive_numbers", func(t *testing.T) {
+		result := just.SliceFilter([]int{-2, -1, 0, 1, 2, 3}, func(n int) bool { return n > 0 })
+		assert.Equal(t, []int{1, 2, 3}, result)
+	})
+
+	t.Run("empty_slice_on_no_elements_match", func(t *testing.T) {
+		result := just.SliceFilter([]int{1, 2, 3}, func(int) bool { return false })
+		assert.Equal(t, []int{}, result)
+	})
+
+	t.Run("all_elements_match", func(t *testing.T) {
+		result := just.SliceFilter([]int{1, 2, 3}, func(int) bool { return true })
+		assert.Equal(t, []int{1, 2, 3}, result)
+	})
+
+	t.Run("duplicate_elements_match", func(t *testing.T) {
+		result := just.SliceFilter([]int{1, 1, 2, 2, 3, 3}, func(int) bool { return true })
+		assert.Equal(t, []int{1, 1, 2, 2, 3, 3}, result)
+	})
+}
+
