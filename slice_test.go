@@ -2073,3 +2073,43 @@ func TestSliceShuffle(t *testing.T) {
 		assert.True(t, differentOrder, "shuffle should change the order (ran 5 times)")
 	})
 }
+
+func TestSlice2Map(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.Slice2Map([]int{})
+		assert.Equal(t, map[int]struct{}{}, result)
+	})
+
+	t.Run("unique_elements", func(t *testing.T) {
+		result := just.Slice2Map([]int{1, 2, 3})
+		expected := map[int]struct{}{
+			1: {},
+			2: {},
+			3: {},
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("duplicate_elements", func(t *testing.T) {
+		result := just.Slice2Map([]int{1, 2, 2, 3, 3, 3})
+		expected := map[int]struct{}{
+			1: {},
+			2: {},
+			3: {},
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("string_slice", func(t *testing.T) {
+		result := just.Slice2Map([]string{"apple", "banana", "apple", "cherry"})
+		expected := map[string]struct{}{
+			"apple":  {},
+			"banana": {},
+			"cherry": {},
+		}
+		assert.Equal(t, expected, result)
+	})
+}
+
