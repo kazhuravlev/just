@@ -2,7 +2,6 @@ package just_test
 
 import (
 	"errors"
-	"iter"
 	"strconv"
 	"testing"
 	"time"
@@ -1864,27 +1863,277 @@ func TestSliceLastN(t *testing.T) {
 	}
 }
 
-func TestSliceIter(t *testing.T) {
+func TestSliceAny(t *testing.T) {
 	t.Parallel()
 
-	f := func(next func() (just.IterContext, int, bool), val, idx, revIdx int, isFirst, isLast bool) {
-		t.Helper()
+	t.Run("empty_slice_returns_false", func(t *testing.T) {
+		result := just.SliceAny([]int{}, func(int) bool { return true })
+		assert.False(t, result)
+	})
 
-		iterCtx, elem, valid := next()
-		require.True(t, valid)
-		assert.Equal(t, val, elem)
-		assert.Equal(t, idx, iterCtx.Idx())
-		assert.Equal(t, revIdx, iterCtx.RevIdx())
-		assert.Equal(t, isFirst, iterCtx.IsFirst())
-		assert.Equal(t, isLast, iterCtx.IsLast())
-	}
+	t.Run("returns_true_when_at_least_one_element_matches", func(t *testing.T) {
+		result := just.SliceAny([]int{1, 2, 3}, func(int) bool { return true })
+		assert.True(t, result)
+	})
 
-	in := []int{10, 20, 30, 40}
-	iterator := just.SliceIter(in)
-	next, _ := iter.Pull2(iterator)
+	t.Run("returns_false_when_no_elements_match", func(t *testing.T) {
+		result := just.SliceAny([]int{1, 2, 3}, func(int) bool { return false })
+		assert.False(t, result)
+	})
 
-	f(next, 10, 0, 3, true, false)
-	f(next, 20, 1, 2, false, false)
-	f(next, 30, 2, 1, false, false)
-	f(next, 40, 3, 0, false, true)
+	t.Run("works_with_strings", func(t *testing.T) {
+		result := just.SliceAny([]string{"apple", "banana", "cherry"}, func(s string) bool {
+			return len(s) > 6
+		})
+		assert.False(t, result)
+
+		result = just.SliceAny([]string{"apple", "banana", "cherry"}, func(s string) bool {
+			return s == "banana"
+		})
+		assert.True(t, result)
+	})
+}
+
+func TestSliceFilter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceFilter([]int{}, func(n int) bool { return n > 0 })
+		assert.Equal(t, []int{}, result)
+	})
+
+	t.Run("filters_positive_numbers", func(t *testing.T) {
+		result := just.SliceFilter([]int{-2, -1, 0, 1, 2, 3}, func(n int) bool { return n > 0 })
+		assert.Equal(t, []int{1, 2, 3}, result)
+	})
+
+	t.Run("empty_slice_on_no_elements_match", func(t *testing.T) {
+		result := just.SliceFilter([]int{1, 2, 3}, func(int) bool { return false })
+		assert.Equal(t, []int{}, result)
+	})
+
+	t.Run("all_elements_match", func(t *testing.T) {
+		result := just.SliceFilter([]int{1, 2, 3}, func(int) bool { return true })
+		assert.Equal(t, []int{1, 2, 3}, result)
+	})
+
+	t.Run("duplicate_elements_match", func(t *testing.T) {
+		result := just.SliceFilter([]int{1, 1, 2, 2, 3, 3}, func(int) bool { return true })
+		assert.Equal(t, []int{1, 1, 2, 2, 3, 3}, result)
+	})
+}
+
+func TestSliceFindFirst(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, -1, result.Idx)
+	})
+
+	t.Run("finds_first_matching_element", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{-2, -1, 0, 1, 2, 3}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, 3, result.Idx)
+		assert.Equal(t, 1, result.Val)
+	})
+
+	t.Run("no_matching_element", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{-2, -1, 0}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, -1, result.Idx)
+	})
+
+	t.Run("uses_index_in_predicate", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{10, 20, 30, 40}, func(i int, n int) bool { return i >= 2 })
+		assert.Equal(t, 2, result.Idx)
+		assert.Equal(t, 30, result.Val)
+	})
+}
+
+func TestSliceFindLast(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceFindLast([]int{}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, -1, result.Idx)
+	})
+
+	t.Run("finds_last_matching_element", func(t *testing.T) {
+		result := just.SliceFindLast([]int{1, 2, 3, -1, -2}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, 2, result.Idx)
+		assert.Equal(t, 3, result.Val)
+	})
+
+	t.Run("no_matching_element", func(t *testing.T) {
+		result := just.SliceFindLast([]int{-2, -1, 0}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, -1, result.Idx)
+	})
+
+	t.Run("uses_index_in_predicate", func(t *testing.T) {
+		result := just.SliceFindLast([]int{10, 20, 30, 40}, func(i int, n int) bool { return i <= 2 })
+		assert.Equal(t, 2, result.Idx)
+		assert.Equal(t, 30, result.Val)
+	})
+}
+
+func TestSliceWithoutElem(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{}, 5)
+		assert.Equal(t, []int{}, result)
+	})
+
+	t.Run("removes_single_occurrence", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{1, 2, 3, 4, 5}, 3)
+		assert.Equal(t, []int{1, 2, 4, 5}, result)
+	})
+
+	t.Run("removes_multiple_occurrences", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{1, 2, 3, 2, 4, 2, 5}, 2)
+		assert.Equal(t, []int{1, 3, 4, 5}, result)
+	})
+
+	t.Run("element_not_in_slice", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{1, 2, 3, 4, 5}, 6)
+		assert.Equal(t, []int{1, 2, 3, 4, 5}, result)
+	})
+
+	t.Run("removes_all_elements", func(t *testing.T) {
+		result := just.SliceWithoutElem([]int{2, 2, 2, 2}, 2)
+		assert.Equal(t, []int{}, result)
+	})
+}
+
+func TestSliceShuffle(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		slice := []int{}
+		just.SliceShuffle(slice)
+		assert.Equal(t, []int{}, slice)
+	})
+
+	t.Run("empty_slice_returns_orig_slice", func(t *testing.T) {
+		var slice []int
+		just.SliceShuffle(slice)
+		assert.Nil(t, slice)
+	})
+
+	t.Run("single_element", func(t *testing.T) {
+		slice := []int{42}
+		just.SliceShuffle(slice)
+		assert.Equal(t, []int{42}, slice)
+	})
+
+	t.Run("shuffles_in_place", func(t *testing.T) {
+		original := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+		slice := make([]int, len(original))
+		copy(slice, original)
+
+		just.SliceShuffle(slice)
+
+		// Should contain same elements
+		assert.ElementsMatch(t, original, slice)
+
+		// Should modify the original slice (in-place)
+		// Note: there's a very small chance they could be in the same order
+		// but for 10 elements this is highly unlikely
+
+		// Run multiple times to reduce chance of false positive
+		differentOrder := false
+		for i := 0; i < 5; i++ {
+			testSlice := make([]int, len(original))
+			copy(testSlice, original)
+			just.SliceShuffle(testSlice)
+			if !assert.ObjectsAreEqual(original, testSlice) {
+				differentOrder = true
+				break
+			}
+		}
+		assert.True(t, differentOrder, "shuffle should change the order (ran 5 times)")
+	})
+}
+
+func TestSlice2Map(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.Slice2Map([]int{})
+		assert.Equal(t, map[int]struct{}{}, result)
+	})
+
+	t.Run("unique_elements", func(t *testing.T) {
+		result := just.Slice2Map([]int{1, 2, 3})
+		expected := map[int]struct{}{
+			1: {},
+			2: {},
+			3: {},
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("duplicate_elements", func(t *testing.T) {
+		result := just.Slice2Map([]int{1, 2, 2, 3, 3, 3})
+		expected := map[int]struct{}{
+			1: {},
+			2: {},
+			3: {},
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("string_slice", func(t *testing.T) {
+		result := just.Slice2Map([]string{"apple", "banana", "apple", "cherry"})
+		expected := map[string]struct{}{
+			"apple":  {},
+			"banana": {},
+			"cherry": {},
+		}
+		assert.Equal(t, expected, result)
+	})
+}
+
+func TestSlice2Iter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty slice", func(t *testing.T) {
+		slice := []int{}
+		iterator := just.Slice2Iter(slice)
+
+		count := 0
+		iterator(func(idx int, val int) bool {
+			count++
+			return true
+		})
+		assert.Equal(t, 0, count)
+	})
+
+	t.Run("iterates all elements", func(t *testing.T) {
+		slice := []int{10, 20, 30}
+		iterator := just.Slice2Iter(slice)
+
+		var indices []int
+		var values []int
+		iterator(func(idx int, val int) bool {
+			indices = append(indices, idx)
+			values = append(values, val)
+			return true
+		})
+
+		assert.Equal(t, []int{0, 1, 2}, indices)
+		assert.Equal(t, []int{10, 20, 30}, values)
+	})
+
+	t.Run("early termination", func(t *testing.T) {
+		slice := []int{1, 2, 3, 4, 5}
+		iterator := just.Slice2Iter(slice)
+
+		var values []int
+		iterator(func(idx int, val int) bool {
+			values = append(values, val)
+			return val < 3 // stop when we reach 3
+		})
+
+		assert.Equal(t, []int{1, 2, 3}, values)
+	})
 }
