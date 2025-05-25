@@ -2,12 +2,15 @@ package just_test
 
 import (
 	"bytes"
+	"context"
 	"github.com/kazhuravlev/just"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
 	"regexp"
+	"sync"
 	"testing"
+	"time"
 )
 
 func TestBool(t *testing.T) {
@@ -79,5 +82,148 @@ func TestMust(t *testing.T) {
 		require.Panics(t, func() {
 			just.Must(regexp.Compile("["))
 		})
+	})
+}
+
+func TestRunAfter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("runs immediately when runNow is true", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		ticker := make(chan time.Time)
+
+		var called bool
+		done := make(chan error, 1)
+		go func() {
+			done <- just.RunAfter(ctx, ticker, true, func(ctx context.Context) error {
+				called = true
+				return assert.AnError // Return error to exit the loop
+			})
+		}()
+
+		err := <-done
+		assert.Equal(t, assert.AnError, err)
+		assert.True(t, called)
+	})
+
+	t.Run("does not run immediately when runNow is false", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		ticker := make(chan time.Time)
+		
+		var called bool
+		done := make(chan struct{})
+		go func() {
+			_ = just.RunAfter(ctx, ticker, false, func(ctx context.Context) error {
+				called = true
+				return nil
+			})
+			close(done)
+		}()
+
+		time.Sleep(10 * time.Millisecond)
+		assert.False(t, called)
+		cancel()
+		<-done
+	})
+
+	t.Run("runs on ticker", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		ticker := make(chan time.Time)
+
+		var count int
+		var mu sync.Mutex
+		done := make(chan struct{})
+		go func() {
+			_ = just.RunAfter(ctx, ticker, false, func(ctx context.Context) error {
+				mu.Lock()
+				count++
+				mu.Unlock()
+				return nil
+			})
+			close(done)
+		}()
+
+		ticker <- time.Now()
+		time.Sleep(10 * time.Millisecond)
+		mu.Lock()
+		assert.Equal(t, 1, count)
+		mu.Unlock()
+
+		ticker <- time.Now()
+		time.Sleep(10 * time.Millisecond)
+		mu.Lock()
+		assert.Equal(t, 2, count)
+		mu.Unlock()
+		
+		cancel()
+		<-done
+	})
+
+	t.Run("returns error from function", func(t *testing.T) {
+		ctx := context.Background()
+		ticker := make(chan time.Time)
+		defer close(ticker)
+
+		expectedErr := assert.AnError
+		err := just.RunAfter(ctx, ticker, true, func(ctx context.Context) error {
+			return expectedErr
+		})
+
+		assert.Equal(t, expectedErr, err)
+	})
+
+	t.Run("stops on context cancellation", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		ticker := make(chan time.Time)
+		defer close(ticker)
+
+		errChan := make(chan error, 1)
+		go func() {
+			errChan <- just.RunAfter(ctx, ticker, false, func(ctx context.Context) error {
+				return nil
+			})
+		}()
+
+		cancel()
+		err := <-errChan
+		assert.Equal(t, context.Canceled, err)
+	})
+}
+
+func TestIf(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns first value when condition is true", func(t *testing.T) {
+		result := just.If(true, "yes", "no")
+		assert.Equal(t, "yes", result)
+	})
+
+	t.Run("returns second value when condition is false", func(t *testing.T) {
+		result := just.If(false, "yes", "no")
+		assert.Equal(t, "no", result)
+	})
+
+	t.Run("works with different types", func(t *testing.T) {
+		// int
+		intResult := just.If(true, 42, 0)
+		assert.Equal(t, 42, intResult)
+
+		// struct
+		type person struct {
+			name string
+			age  int
+		}
+		alice := person{name: "Alice", age: 30}
+		bob := person{name: "Bob", age: 25}
+		personResult := just.If(true, alice, bob)
+		assert.Equal(t, alice, personResult)
+
+		// pointers
+		x, y := 1, 2
+		ptrResult := just.If(false, &x, &y)
+		assert.Equal(t, &y, ptrResult)
 	})
 }
