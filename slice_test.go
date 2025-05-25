@@ -1949,3 +1949,28 @@ func TestSliceFilter(t *testing.T) {
 	})
 }
 
+func TestSliceFindFirst(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, -1, result.Idx)
+	})
+
+	t.Run("finds_first_matching_element", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{-2, -1, 0, 1, 2, 3}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, 3, result.Idx)
+		assert.Equal(t, 1, result.Val)
+	})
+
+	t.Run("no_matching_element", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{-2, -1, 0}, func(i int, n int) bool { return n > 0 })
+		assert.Equal(t, -1, result.Idx)
+	})
+
+	t.Run("uses_index_in_predicate", func(t *testing.T) {
+		result := just.SliceFindFirst([]int{10, 20, 30, 40}, func(i int, n int) bool { return i >= 2 })
+		assert.Equal(t, 2, result.Idx)
+		assert.Equal(t, 30, result.Val)
+	})
+}
