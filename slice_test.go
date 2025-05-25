@@ -2113,3 +2113,47 @@ func TestSlice2Map(t *testing.T) {
 	})
 }
 
+func TestSlice2Iter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty slice", func(t *testing.T) {
+		slice := []int{}
+		iterator := just.Slice2Iter(slice)
+
+		count := 0
+		iterator(func(idx int, val int) bool {
+			count++
+			return true
+		})
+		assert.Equal(t, 0, count)
+	})
+
+	t.Run("iterates all elements", func(t *testing.T) {
+		slice := []int{10, 20, 30}
+		iterator := just.Slice2Iter(slice)
+
+		var indices []int
+		var values []int
+		iterator(func(idx int, val int) bool {
+			indices = append(indices, idx)
+			values = append(values, val)
+			return true
+		})
+
+		assert.Equal(t, []int{0, 1, 2}, indices)
+		assert.Equal(t, []int{10, 20, 30}, values)
+	})
+
+	t.Run("early termination", func(t *testing.T) {
+		slice := []int{1, 2, 3, 4, 5}
+		iterator := just.Slice2Iter(slice)
+
+		var values []int
+		iterator(func(idx int, val int) bool {
+			values = append(values, val)
+			return val < 3 // stop when we reach 3
+		})
+
+		assert.Equal(t, []int{1, 2, 3}, values)
+	})
+}
