@@ -1888,3 +1888,35 @@ func TestSliceIter(t *testing.T) {
 	f(next, 30, 2, 1, false, false)
 	f(next, 40, 3, 0, false, true)
 }
+
+func TestSliceAny(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice_returns_false", func(t *testing.T) {
+		result := just.SliceAny([]int{}, func(int) bool { return true })
+		assert.False(t, result)
+	})
+
+	t.Run("returns_true_when_at_least_one_element_matches", func(t *testing.T) {
+		result := just.SliceAny([]int{1, 2, 3}, func(int) bool { return true })
+		assert.True(t, result)
+	})
+
+	t.Run("returns_false_when_no_elements_match", func(t *testing.T) {
+		result := just.SliceAny([]int{1, 2, 3}, func(int) bool { return false })
+		assert.False(t, result)
+	})
+
+	t.Run("works_with_strings", func(t *testing.T) {
+		result := just.SliceAny([]string{"apple", "banana", "cherry"}, func(s string) bool {
+			return len(s) > 6
+		})
+		assert.False(t, result)
+
+		result = just.SliceAny([]string{"apple", "banana", "cherry"}, func(s string) bool {
+			return s == "banana"
+		})
+		assert.True(t, result)
+	})
+}
+
