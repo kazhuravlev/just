@@ -743,3 +743,211 @@ func TestMapSetVal(t *testing.T) {
 	f(m{1: 1}, 1, 111, m{1: 111})
 	f(m{1: 1}, 2, 2, m{1: 1, 2: 2})
 }
+
+func TestMapFilter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty map", func(t *testing.T) {
+		result := just.MapFilter(map[string]int{}, func(k string, v int) bool {
+			return v > 0
+		})
+		assert.Equal(t, map[string]int{}, result)
+	})
+
+	t.Run("filters by value", func(t *testing.T) {
+		input := map[string]int{
+			"a": 1,
+			"b": -2,
+			"c": 3,
+			"d": -4,
+			"e": 5,
+		}
+		result := just.MapFilter(input, func(k string, v int) bool {
+			return v > 0
+		})
+		expected := map[string]int{
+			"a": 1,
+			"c": 3,
+			"e": 5,
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("filters by key", func(t *testing.T) {
+		input := map[string]int{
+			"apple":  1,
+			"banana": 2,
+			"apricot": 3,
+			"cherry": 4,
+		}
+		result := just.MapFilter(input, func(k string, v int) bool {
+			return len(k) > 5
+		})
+		expected := map[string]int{
+			"banana": 2,
+			"apricot": 3,
+			"cherry": 4,
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("filters by key and value", func(t *testing.T) {
+		input := map[string]int{
+			"a": 10,
+			"bb": 20,
+			"ccc": 30,
+			"dddd": 40,
+		}
+		result := just.MapFilter(input, func(k string, v int) bool {
+			return len(k) >= 2 && v <= 30
+		})
+		expected := map[string]int{
+			"bb": 20,
+			"ccc": 30,
+		}
+		assert.Equal(t, expected, result)
+	})
+
+	t.Run("no elements match", func(t *testing.T) {
+		input := map[string]int{
+			"a": 1,
+			"b": 2,
+			"c": 3,
+		}
+		result := just.MapFilter(input, func(k string, v int) bool {
+			return v > 10
+		})
+		assert.Equal(t, map[string]int{}, result)
+	})
+
+	t.Run("all elements match", func(t *testing.T) {
+		input := map[string]int{
+			"a": 1,
+			"b": 2,
+			"c": 3,
+		}
+		result := just.MapFilter(input, func(k string, v int) bool {
+			return v > 0
+		})
+		assert.Equal(t, input, result)
+	})
+}
+
+func TestMapContainsKey(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty map", func(t *testing.T) {
+		result := just.MapContainsKey(map[string]int{}, "key")
+		assert.False(t, result)
+	})
+
+	t.Run("key exists", func(t *testing.T) {
+		m := map[string]int{
+			"a": 1,
+			"b": 2,
+			"c": 3,
+		}
+		assert.True(t, just.MapContainsKey(m, "b"))
+		assert.True(t, just.MapContainsKey(m, "a"))
+		assert.True(t, just.MapContainsKey(m, "c"))
+	})
+
+	t.Run("key does not exist", func(t *testing.T) {
+		m := map[string]int{
+			"a": 1,
+			"b": 2,
+			"c": 3,
+		}
+		assert.False(t, just.MapContainsKey(m, "d"))
+		assert.False(t, just.MapContainsKey(m, ""))
+		assert.False(t, just.MapContainsKey(m, "aa"))
+	})
+
+	t.Run("zero value exists", func(t *testing.T) {
+		m := map[string]int{
+			"a": 0,
+			"b": 1,
+		}
+		assert.True(t, just.MapContainsKey(m, "a"))
+	})
+
+	t.Run("nil map", func(t *testing.T) {
+		var m map[string]int
+		assert.False(t, just.MapContainsKey(m, "key"))
+	})
+}
+
+func TestMapCopy(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty map", func(t *testing.T) {
+		original := map[string]int{}
+		copied := just.MapCopy(original)
+		assert.Equal(t, original, copied)
+		assert.NotSame(t, original, copied)
+	})
+
+	t.Run("nil map", func(t *testing.T) {
+		var original map[string]int
+		copied := just.MapCopy(original)
+		assert.Nil(t, copied)
+	})
+
+	t.Run("copies map content", func(t *testing.T) {
+		original := map[string]int{
+			"a": 1,
+			"b": 2,
+			"c": 3,
+		}
+		copied := just.MapCopy(original)
+		assert.Equal(t, original, copied)
+		
+		// Verify it's a different map
+		original["d"] = 4
+		assert.NotEqual(t, original, copied)
+		assert.Equal(t, 3, len(copied))
+		assert.Equal(t, 4, len(original))
+	})
+
+	t.Run("shallow copy with struct values", func(t *testing.T) {
+		type person struct {
+			name string
+			age  int
+		}
+		
+		original := map[string]person{
+			"alice": {name: "Alice", age: 30},
+			"bob":   {name: "Bob", age: 25},
+		}
+		copied := just.MapCopy(original)
+		
+		assert.Equal(t, original, copied)
+		
+		// Modify original
+		original["charlie"] = person{name: "Charlie", age: 35}
+		assert.NotEqual(t, original, copied)
+		assert.Equal(t, 2, len(copied))
+		assert.Equal(t, 3, len(original))
+	})
+
+	t.Run("shallow copy with pointer values", func(t *testing.T) {
+		a, b, c := 1, 2, 3
+		original := map[string]*int{
+			"a": &a,
+			"b": &b,
+			"c": &c,
+		}
+		copied := just.MapCopy(original)
+		
+		// Same pointers (shallow copy)
+		assert.Same(t, original["a"], copied["a"])
+		assert.Same(t, original["b"], copied["b"])
+		assert.Same(t, original["c"], copied["c"])
+		
+		// But different maps
+		d := 4
+		original["d"] = &d
+		assert.Equal(t, 3, len(copied))
+		assert.Equal(t, 4, len(original))
+	})
+}
