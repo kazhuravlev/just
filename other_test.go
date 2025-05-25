@@ -111,7 +111,7 @@ func TestRunAfter(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		ticker := make(chan time.Time)
-		
+
 		var called bool
 		done := make(chan struct{})
 		go func() {
@@ -157,7 +157,7 @@ func TestRunAfter(t *testing.T) {
 		mu.Lock()
 		assert.Equal(t, 2, count)
 		mu.Unlock()
-		
+
 		cancel()
 		<-done
 	})
