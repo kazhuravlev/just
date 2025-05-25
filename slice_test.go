@@ -2029,3 +2029,47 @@ func TestSliceWithoutElem(t *testing.T) {
 		assert.Equal(t, []int{}, result)
 	})
 }
+
+func TestSliceShuffle(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty_slice", func(t *testing.T) {
+		var slice []int
+		just.SliceShuffle(slice)
+		assert.Equal(t, []int{}, slice)
+	})
+
+	t.Run("single_element", func(t *testing.T) {
+		slice := []int{42}
+		just.SliceShuffle(slice)
+		assert.Equal(t, []int{42}, slice)
+	})
+
+	t.Run("shuffles_in_place", func(t *testing.T) {
+		original := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+		slice := make([]int, len(original))
+		copy(slice, original)
+
+		just.SliceShuffle(slice)
+
+		// Should contain same elements
+		assert.ElementsMatch(t, original, slice)
+
+		// Should modify the original slice (in-place)
+		// Note: there's a very small chance they could be in the same order
+		// but for 10 elements this is highly unlikely
+
+		// Run multiple times to reduce chance of false positive
+		differentOrder := false
+		for i := 0; i < 5; i++ {
+			testSlice := make([]int, len(original))
+			copy(testSlice, original)
+			just.SliceShuffle(testSlice)
+			if !assert.ObjectsAreEqual(original, testSlice) {
+				differentOrder = true
+				break
+			}
+		}
+		assert.True(t, differentOrder, "shuffle should change the order (ran 5 times)")
+	})
+}
