@@ -185,7 +185,7 @@ func TestNullValYAML(t *testing.T) {
 				Name string `yaml:"name"`
 				Age  int    `yaml:"age"`
 			}
-			
+
 			var nv just.NullVal[person]
 			yamlData := []byte("name: Alice\nage: 30")
 			err := nv.UnmarshalYAML(yamlData)
@@ -235,7 +235,7 @@ func TestNullValYAML(t *testing.T) {
 				Name string `yaml:"name"`
 				Age  int    `yaml:"age"`
 			}
-			
+
 			nv := just.Null(person{Name: "Bob", Age: 25})
 			data, err := nv.MarshalYAML()
 			assert.NoError(t, err)
@@ -254,27 +254,27 @@ func TestNullValYAML(t *testing.T) {
 	t.Run("Round trip marshaling", func(t *testing.T) {
 		t.Run("valid value", func(t *testing.T) {
 			original := just.Null("test string")
-			
+
 			// Marshal
 			data, err := original.MarshalYAML()
 			assert.NoError(t, err)
-			
+
 			// Unmarshal
 			var result just.NullVal[string]
 			err = result.UnmarshalYAML(data)
 			assert.NoError(t, err)
-			
+
 			assert.Equal(t, original, result)
 		})
 
 		t.Run("invalid value", func(t *testing.T) {
 			original := just.NullNull[int]()
-			
+
 			// Marshal
 			data, err := original.MarshalYAML()
 			assert.NoError(t, err)
 			assert.Equal(t, []byte("null"), data)
-			
+
 			// Note: UnmarshalYAML treats "null" as a valid value with zero value
 			// This is a limitation of the current implementation
 		})

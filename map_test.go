@@ -775,34 +775,34 @@ func TestMapFilter(t *testing.T) {
 
 	t.Run("filters by key", func(t *testing.T) {
 		input := map[string]int{
-			"apple":  1,
-			"banana": 2,
+			"apple":   1,
+			"banana":  2,
 			"apricot": 3,
-			"cherry": 4,
+			"cherry":  4,
 		}
 		result := just.MapFilter(input, func(k string, v int) bool {
 			return len(k) > 5
 		})
 		expected := map[string]int{
-			"banana": 2,
+			"banana":  2,
 			"apricot": 3,
-			"cherry": 4,
+			"cherry":  4,
 		}
 		assert.Equal(t, expected, result)
 	})
 
 	t.Run("filters by key and value", func(t *testing.T) {
 		input := map[string]int{
-			"a": 10,
-			"bb": 20,
-			"ccc": 30,
+			"a":    10,
+			"bb":   20,
+			"ccc":  30,
 			"dddd": 40,
 		}
 		result := just.MapFilter(input, func(k string, v int) bool {
 			return len(k) >= 2 && v <= 30
 		})
 		expected := map[string]int{
-			"bb": 20,
+			"bb":  20,
 			"ccc": 30,
 		}
 		assert.Equal(t, expected, result)
@@ -901,7 +901,7 @@ func TestMapCopy(t *testing.T) {
 		}
 		copied := just.MapCopy(original)
 		assert.Equal(t, original, copied)
-		
+
 		// Verify it's a different map
 		original["d"] = 4
 		assert.NotEqual(t, original, copied)
@@ -914,15 +914,15 @@ func TestMapCopy(t *testing.T) {
 			name string
 			age  int
 		}
-		
+
 		original := map[string]person{
 			"alice": {name: "Alice", age: 30},
 			"bob":   {name: "Bob", age: 25},
 		}
 		copied := just.MapCopy(original)
-		
+
 		assert.Equal(t, original, copied)
-		
+
 		// Modify original
 		original["charlie"] = person{name: "Charlie", age: 35}
 		assert.NotEqual(t, original, copied)
@@ -938,12 +938,12 @@ func TestMapCopy(t *testing.T) {
 			"c": &c,
 		}
 		copied := just.MapCopy(original)
-		
+
 		// Same pointers (shallow copy)
 		assert.Same(t, original["a"], copied["a"])
 		assert.Same(t, original["b"], copied["b"])
 		assert.Same(t, original["c"], copied["c"])
-		
+
 		// But different maps
 		d := 4
 		original["d"] = &d
