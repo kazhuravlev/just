@@ -1,6 +1,7 @@
 package just
 
 import (
+	"bytes"
 	"database/sql"
 	"database/sql/driver"
 	"errors"
@@ -19,6 +20,12 @@ type NullVal[T any] struct {
 func (nv *NullVal[T]) UnmarshalYAML(bb []byte) error {
 	if len(bb) == 0 {
 		nv.Valid = false
+		nv.Val = *new(T)
+		return nil
+	}
+
+	if bytes.Equal(bb, []byte("null")) {
+		nv.Valid = true
 		nv.Val = *new(T)
 		return nil
 	}

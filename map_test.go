@@ -884,7 +884,7 @@ func TestMapCopy(t *testing.T) {
 		original := map[string]int{}
 		copied := just.MapCopy(original)
 		assert.Equal(t, original, copied)
-		assert.NotSame(t, original, copied)
+		assert.NotSame(t, &original, &copied)
 	})
 
 	t.Run("nil map", func(t *testing.T) {
